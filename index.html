@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400..800&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link href="style.css" rel="stylesheet">
+    <script src="Motion.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <title>El Letsoneros | The Best Lechon in Town</title>
+    <link rel="icon" type="image/png" href="favicon.png" sizes="32x32" />
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+
+<!-- header -->
+<header class="header">
+    <a href="#" class="logo">El Letsonero's</a>
+    <nav class="navbar">
+        <a href="#" aria-label="Go to top">
+            <i class="bx bx-home" id="home-icon"></i>
+        </a>
+        <a href="#services">Services</a>
+        <a href="#food-choices">Selection</a>
+        <a href="#history">History</a>
+        <a href="#contact">Contact Us!</a>
+        <a href="login.html">Login</a>
+    </nav>
+</header>
+
+<!-- hero -->
+<section class="heading-section">
+    <div class="hero-left">
+        <div class="hero-badge">🇵🇭 Proudly Filipino Business</div>
+        <h1>EL LETSONERO'S</h1>
+        <p class="hero-tagline">The best lechon in Bohol — roasted with tradition, served with love.</p>
+        <p class="hero-tagline">Lami jamo mga sano!</p>
+        <a href="#contact" class="hero-btn">Order Now <i class="bx bx-right-arrow-alt"></i></a>
+    </div>
+    <img src="EL%20LETSONEROS-LOGO.jpg" class="home-img" alt="El Letsoneros Lechon Logo">
+</section>
+
+<!-- services -->
+<section class="services" id="services">
+    <div class="services-header">
+        <h2>Services</h2>
+    </div>
+    <div class="services-grid">
+        <div class="service-card reveal">
+            <i class="bx bx-home-smile"></i>
+            <h3>House-to-House Delivery</h3>
+            <p>We deliver your whole lechon order straight to your door, hot and ready to eat.</p>
+        </div>
+        <div class="service-card reveal">
+            <i class="bx bx-cut"></i>
+            <h3>Per Kilo — Chopped</h3>
+            <p>Need less than a whole lechon? We sell by the kilo, freshly chopped for you.</p>
+        </div>
+    </div>
+</section>
+
+<!-- food choices -->
+<section class="foodchoices" id="food-choices">
+    <div class="foodchoices-header">
+        <h2>Selection</h2>
+    </div>
+    <ul class="food-list">
+        <li class="reveal" data-target="gallery-lechon">Whole Lechon</li>
+        <li class="reveal" data-target="gallery-kilo">Chopped Per Kilo</li>
+        <li class="reveal" data-target="gallery-belly">Lechon Belly</li>
+        <li class="reveal" data-target="gallery-chicken">Native Chicken</li>
+    </ul>
+
+    <div class="gallery" id="gallery-lechon">
+        <img src="lechon1.jpg" alt="Whole Lechon">
+        <img src="lechon2.jpg" alt="Whole Lechon">
+        <img src="lechon3.jpg" alt="Whole Lechon">
+        <img src="lechon4.jpg" alt="Whole Lechon">
+    </div>
+
+    <div class="gallery" id="gallery-kilo">
+        <img src="kilo1.jpg" alt="Chopped Per Kilo">
+        <img src="kilo2.jpg" alt="Chopped Per Kilo">
+        <img src="kilo3.jpg" alt="Chopped Per Kilo">
+        <img src="kilo4.jpg" alt="Chopped Per Kilo">
+    </div>
+
+    <div class="gallery" id="gallery-belly">
+        <img src="belly1.jpg" alt="Lechon Belly">
+        <img src="belly2.jpg" alt="Lechon Belly">
+        <img src="belly3.jpg" alt="Lechon Belly">
+        <img src="belly4.jpg" alt="Lechon Belly">
+    </div>
+
+    <div class="gallery" id="gallery-chicken">
+        <img src="chicken1.jpg" alt="Native Chicken">
+        <img src="chicken2.jpg" alt="Native Chicken">
+        <img src="chicken3.jpg" alt="Native Chicken">
+        <img src="chicken4.jpg" alt="Native Chicken">
+    </div>
+</section>
+
+<!-- history -->
+<section class="history" id="history">
+    <div class="history-header">
+        <h2>History</h2>
+    </div>
+    <div class="history-content">
+        <div class="history-text">
+            <p class="reveal">In the year 2016, Mr. Marckeil started off by chopping lechon per kilo, and accepted utangs "credit" and house to house delivery. After two years, he realized that allowing others to utang did not do him any good.</p>
+            <p class="reveal">Then came along the year 2019. Along with his wife, they finally decided to accept full orders of lechon. On the first week, they only sold over 1-3 lechons. But when the fiesta in their hometown (Baclayon) came, this is when their lives started to change. Orders came rushing in and their business started to come to life and be known throughout the town and to other municipalities in Bohol. Eventually, they added two more food options to their menu — from just serving one whole lechon, they eventually started serving lechon belly and native manok.</p>
+            <p class="reveal">While finally receiving a lot of orders and their business starts to be known, a global virus reached hundreds of countries, including the Philippines. It became an obstacle for their business as people started being cautious around other people, even suspecting the pigs might catch the virus. But with strong faith in the Lord and a lot of determination, the business strived, finding their way and beating the obstacle that held them back. And luckily, the virus was not strong enough to beat the Filipino hearts from eating lechon.</p>
+            <p class="reveal">And here they are now, serving chopped lechon per kilo, finishing whole lechon orders, delivering them from house to house, selling every native manok there is left. This is El Letsonero's.</p>
+        </div>
+
+        <div class="history-images">
+            <div class="slideshow">
+                <img src="history1.jpg" alt="El Letsoneros history" class="slide active">
+                <img src="history2.jpg" alt="El Letsoneros history" class="slide">
+                <img src="history3.jpg" alt="El Letsoneros history" class="slide">
+                <img src="history4.jpg" alt="El Letsoneros history" class="slide">
+                <img src="history5.jpg" alt="El Letsoneros history" class="slide">
+                <img src="history6.jpg" alt="El Letsoneros history" class="slide">
+                <img src="history7.jpg" alt="El Letsoneros history" class="slide">
+                <img src="history8.jpg" alt="El Letsoneros history" class="slide">
+                <img src="history9.jpg" alt="El Letsoneros history" class="slide">
+                <img src="history10.jpg" alt="El Letsoneros history" class="slide">
+                <img src="history11.jpg" alt="El Letsoneros history" class="slide">
+                <img src="history12.jpg" alt="El Letsoneros history" class="slide">
+            </div>
+            <div class="slide-dots">
+                <span class="dot active"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- contact -->
+<section class="Contact" id="contact">
+    <h2>Contact Us!</h2>
+    <p>Find us in different social media accounts</p>
+
+    <div class="contact-content">
+
+        <div class="facebook-card reveal">
+            <div class="facebook-card-left">
+                <img src="Logo.png" alt="Facebook logo">
+                <div class="facebook-card-text">
+                    <span class="facebook-label">Find us on Facebook</span>
+                    <span class="facebook-name">El Letsonero's</span>
+                </div>
+            </div>
+            <a href="https://www.facebook.com/profile.php?id=100063690770242" class="facebook-visit-btn" target="_blank">
+                Visit Page <i class="bx bx-right-arrow-alt"></i>
+            </a>
+        </div>
+
+        <div class="email-card reveal">
+            <div class="email-card-left">
+                <div class="email-icon-box">
+                    <i class="bx bx-envelope"></i>
+                </div>
+                <div class="email-card-text">
+                    <span class="email-label">Email us at</span>
+                    <span class="email-address">markybytz02@gmail.com</span>
+                </div>
+            </div>
+            <a href="mailto:elletsoneros@gmail.com" class="email-copy-btn">
+                Send Email <i class="bx bx-right-arrow-alt"></i>
+            </a>
+        </div>
+
+        <div class="youtube-card reveal">
+            <div class="youtube-card-right">
+                <img src="https://www.freeiconspng.com/uploads/hd-youtube-logo-png-transparent-background-20.png" alt="Youtube logo">
+                <div class="youtube-card-text">
+                    <span class="youtube-label">Find us on Youtube</span>
+                    <span class="youtube-name">El Letsonero's</span>
+                </div>
+            </div>
+            <a href="http://www.youtube.com/@elletsoneros336" class="youtube-visit-btn" target="_blank">
+                Visit Page <i class="bx bx-right-arrow-alt"></i>
+            </a>
+        </div>
+
+    </div>
+</section>
+
+<!-- footer -->
+<footer>
+    &copy; 2025 <span>El Letsoneros</span> — Baclayon, Bohol
+</footer>
+
+</body>
+</html>
