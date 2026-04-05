@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400..800&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link href="style.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <title>Login | El Letsonero's</title>
+    <link rel="icon" type="image/png" href="favicon.png" sizes="32x32" />
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding-top: 0;
+            cursor: auto;
+        }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <a href="index.html" class="logo">El Letsonero's</a>
+</header>
+
+<div class="login-wrapper">
+    <div class="login-card">
+
+        <a href="index.html" class="back-link">
+            <i class="bx bx-arrow-back"></i> Back to site
+        </a>
+
+        <div class="card-brand">
+            <h1>EL LETSONERO'S</h1>
+            <p>Sign in to manage your orders</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" id="tab-in" onclick="setTab('in')">Sign In</button>
+            <button class="tab-btn" id="tab-up" onclick="setTab('up')">Sign Up</button>
+        </div>
+
+        <div id="toast" class="toast"></div>
+
+        <div id="form-in">
+            <div class="field">
+                <label>Email</label>
+                <input type="email" id="si-email" placeholder="you@example.com" />
+            </div>
+            <div class="field">
+                <label>Password</label>
+                <input type="password" id="si-pass" placeholder="••••••••" />
+                <a class="forgot" onclick="handleForgot()">Forgot password?</a>
+            </div>
+            <button class="btn-submit" id="si-btn" onclick="handleSignIn()">Sign In</button>
+            <p class="switch-text">No account yet? <a onclick="setTab('up')">Sign up</a></p>
+        </div>
+
+        <div id="form-up" style="display:none">
+            <div class="field">
+                <label>Email</label>
+                <input type="email" id="su-email" placeholder="you@example.com" />
+            </div>
+            <div class="field">
+                <label>Password</label>
+                <input type="password" id="su-pass" placeholder="Min. 6 characters" />
+            </div>
+            <button class="btn-submit" id="su-btn" onclick="handleSignUp()">Create Account</button>
+            <p class="switch-text">Already have an account? <a onclick="setTab('in')">Sign in</a></p>
+        </div>
+
+    </div>
+</div>
+
+<footer>
+    &copy; 2025 <span>El Letsoneros</span> — Baclayon, Bohol
+</footer>
+
+<script>
+    const { createClient } = supabase
+    const db = createClient(
+        'https://oqjbpfcekubulyeynywf.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xamJwZmNla3VidWx5ZXlueXdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNjE1MjYsImV4cCI6MjA5MDkzNzUyNn0.k9l3w3PfWEnQ4ph8BqUUVI1ODxNkG8D1aZU3ou-V91A'
+    )
+
+    function setTab(t) {
+        const isIn = t === 'in'
+        document.getElementById('form-in').style.display = isIn ? '' : 'none'
+        document.getElementById('form-up').style.display = isIn ? 'none' : ''
+        document.getElementById('tab-in').classList.toggle('active', isIn)
+        document.getElementById('tab-up').classList.toggle('active', !isIn)
+        hideToast()
+    }
+
+    function showToast(msg, type) {
+        const t = document.getElementById('toast')
+        t.textContent = msg
+        t.className = 'toast ' + type
+    }
+
+    function hideToast() {
+        document.getElementById('toast').className = 'toast'
+    }
+
+    async function handleSignIn() {
+        const email = document.getElementById('si-email').value.trim()
+        const pass  = document.getElementById('si-pass').value
+        if (!email || !pass) return showToast('Please fill in all fields.', 'error')
+        const btn = document.getElementById('si-btn')
+        btn.disabled = true
+        btn.textContent = 'Signing in...'
+        const { error } = await db.auth.signInWithPassword({ email, password: pass })
+        btn.disabled = false
+        btn.textContent = 'Sign In'
+        if (error) return showToast(error.message, 'error')
+        showToast('Welcome back! Redirecting...', 'success')
+        setTimeout(() => window.location.href = 'index.html', 1200)
+    }
+
+    async function handleSignUp() {
+        const email = document.getElementById('su-email').value.trim()
+        const pass  = document.getElementById('su-pass').value
+        if (!email || !pass) return showToast('Please fill in all fields.', 'error')
+        if (pass.length < 6) return showToast('Password must be at least 6 characters.', 'error')
+        const btn = document.getElementById('su-btn')
+        btn.disabled = true
+        btn.textContent = 'Creating account...'
+        const { error } = await db.auth.signUp({ email, password: pass })
+        btn.disabled = false
+        btn.textContent = 'Create Account'
+        if (error) return showToast(error.message, 'error')
+        showToast('Account created! Check your email to confirm.', 'success')
+    }
+
+    async function handleForgot() {
+        const email = document.getElementById('si-email').value.trim()
+        if (!email) return showToast('Enter your email first, then click forgot password.', 'error')
+        const { error } = await db.auth.resetPasswordForEmail(email)
+        if (error) return showToast(error.message, 'error')
+        showToast('Password reset email sent!', 'success')
+    }
+
+    db.auth.getSession().then(({ data: { session } }) => {
+        if (session) window.location.href = 'index.html'
+    })
+</script>
+
+</body>
+</html>
