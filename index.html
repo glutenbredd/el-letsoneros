@@ -17,7 +17,6 @@
 
 <div class="cursor" id="cursor"></div>
 
-<!-- header -->
 <header class="header">
     <a href="#" class="logo">El Letsonero's</a>
     <nav class="navbar">
@@ -28,11 +27,10 @@
         <a href="#food-choices">Selection</a>
         <a href="#history">History</a>
         <a href="#contact">Contact Us!</a>
-        <a href="login.html">Login</a>
+        <a href="login.html" class="nav-login-btn" id="nav-auth-btn">Login</a>
     </nav>
 </header>
 
-<!-- hero -->
 <section class="heading-section">
     <div class="hero-left">
         <div class="hero-badge">🇵🇭 Proudly Filipino Business</div>
@@ -44,7 +42,6 @@
     <img src="EL%20LETSONEROS-LOGO.jpg" class="home-img" alt="El Letsoneros Lechon Logo">
 </section>
 
-<!-- services -->
 <section class="services" id="services">
     <div class="services-header">
         <h2>Services</h2>
@@ -63,7 +60,6 @@
     </div>
 </section>
 
-<!-- food choices -->
 <section class="foodchoices" id="food-choices">
     <div class="foodchoices-header">
         <h2>Selection</h2>
@@ -104,7 +100,6 @@
     </div>
 </section>
 
-<!-- history -->
 <section class="history" id="history">
     <div class="history-header">
         <h2>History</h2>
@@ -147,11 +142,9 @@
                 <span class="dot"></span>
             </div>
         </div>
-
     </div>
 </section>
 
-<!-- contact -->
 <section class="Contact" id="contact">
     <h2>Contact Us!</h2>
     <p>Find us in different social media accounts</p>
@@ -202,10 +195,29 @@
     </div>
 </section>
 
-<!-- footer -->
 <footer>
     &copy; 2025 <span>El Letsoneros</span> — Baclayon, Bohol
 </footer>
+
+<script>
+    const { createClient } = supabase
+    const db = createClient(
+        'https://oqjbpfcekubulyeynywf.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xamJwZmNla3VidWx5ZXlueXdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNjE1MjYsImV4cCI6MjA5MDkzNzUyNn0.k9l3w3PfWEnQ4ph8BqUUVI1ODxNkG8D1aZU3ou-V91A'
+    )
+
+    db.auth.getSession().then(({ data: { session } }) => {
+        const btn = document.getElementById('nav-auth-btn')
+        if (session) {
+            btn.textContent = 'Sign Out'
+            btn.removeAttribute('href')
+            btn.addEventListener('click', async () => {
+                await db.auth.signOut()
+                window.location.reload()
+            })
+        }
+    })
+</script>
 
 </body>
 </html>
