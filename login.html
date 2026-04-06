@@ -44,11 +44,11 @@
 <footer>&copy; 2025 <span>El Letsoneros</span> — Baclayon, Bohol</footer>
 
 <script>
-    const { createClient } = supabase
     const db = createClient(
-        'https://oqjbpfcekubulyeynywf.supabase.co',
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xamJwZmNla3VidWx5ZXlueXdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNjE1MjYsImV4cCI6MjA5MDkzNzUyNn0.k9l3w3PfWEnQ4ph8BqUUVI1ODxNkG8D1aZU3ou-V91A'
-    )
+    'https://oqjbpfcekubulyeynywf.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xamJwZmNla3VidWx5ZXlueXdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNjE1MjYsImV4cCI6MjA5MDkzNzUyNn0.k9l3w3PfWEnQ4ph8BqUUVI1ODxNkG8D1aZU3ou-V91A',
+    { auth: { persistSession: false } }
+)
 
     const params = new URLSearchParams(window.location.search)
     if (params.get('registered')) {
@@ -76,10 +76,6 @@
         showToast('Welcome back! Redirecting...', 'success')
         setTimeout(() => window.location.href = 'https://github.com/glutenbredd/el-letsoneros', 1200)
     }
-
-    db.auth.getSession().then(({ data: { session } }) => {
-        if (session) window.location.href = 'index.html'
-    })
 </script>
 
 </body>
