@@ -1,82 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400..800&display=swap" rel="stylesheet">
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <link href="style.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <title>Login | El Letsonero's</title>
-    <link rel="icon" type="image/png" href="favicon.png" sizes="32x32" />
-    <style>
-        body { display: flex; flex-direction: column; min-height: 100vh; padding-top: 0; cursor: auto; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400..800&display=swap" rel="stylesheet">
+<link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+<link href="style.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<title>Login | El Letsonero's</title>
+<link rel="icon" type="image/png" href="favicon.png" sizes="32x32" />
+<style>
+body { display: flex; flex-direction: column; min-height: 100vh; padding-top: 0; cursor: auto; }
+</style>
 </head>
 <body>
 
 <header class="header">
-    <a href="index.html" class="logo">El Letsonero's</a>
+<a href="index.html" class="logo">El Letsonero's</a>
 </header>
 
 <div class="login-wrapper">
-    <div class="login-card">
-        <a href="index.html" class="back-link"><i class="bx bx-arrow-back"></i> Back to site</a>
-        <div class="card-brand">
-            <h1>EL LETSONERO'S</h1>
-            <p>Sign in to manage your orders</p>
-        </div>
-        <div id="toast" class="toast"></div>
-        <div class="field">
-            <label>Email</label>
-            <input type="email" id="email" placeholder="you@example.com" />
-        </div>
-        <div class="field">
-            <label>Password</label>
-            <input type="password" id="pass" placeholder="••••••••" />
-        </div>
-        <button class="btn-submit" id="btn" onclick="handleSignIn()">Sign In</button>
-    </div>
+<div class="login-card">
+<a href="index.html" class="back-link"><i class="bx bx-arrow-back"></i> Back to site</a>
+<div class="card-brand">
+<h1>EL LETSONERO'S</h1>
+<p>Sign in to manage your orders</p>
+</div>
+<div id="toast" class="toast"></div>
+<div class="field">
+<label>Email</label>
+<input type="email" id="email" placeholder="you@example.com" />
+</div>
+<div class="field">
+<label>Password</label>
+<input type="password" id="pass" placeholder="••••••••" />
+</div>
+<button class="btn-submit" id="btn" onclick="handleSignIn()">Sign In</button>
+</div>
 </div>
 
 <footer>&copy; 2025 <span>El Letsoneros</span> — Baclayon, Bohol</footer>
 
 <script>
-    const { createClient } = supabase
-    const db = createClient(
-    'https://oqjbpfcekubulyeynywf.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xamJwZmNla3VidWx5ZXlueXdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNjE1MjYsImV4cCI6MjA5MDkzNzUyNn0.k9l3w3PfWEnQ4ph8BqUUVI1ODxNkG8D1aZU3ou-V91A',
-    { auth: { persistSession: false } }
+const { createClient } = supabase
+const db = createClient(
+'https://oqjbpfcekubulyeynywf.supabase.co',
+'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xamJwZmNla3VidWx5ZXlueXdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNjE1MjYsImV4cCI6MjA5MDkzNzUyNn0.k9l3w3PfWEnQ4ph8BqUUVI1ODxNkG8D1aZU3ou-V91A'
 )
 
-    const params = new URLSearchParams(window.location.search)
-    if (params.get('registered')) {
-        document.getElementById('email').value = params.get('registered')
-        showToast('Check your email for a verification link before signing in.', 'success')
-    }
+const params = new URLSearchParams(window.location.search)
+if (params.get('registered')) {
+document.getElementById('email').value = params.get('registered')
+showToast('Check your email for a verification link before signing in.', 'success')
+}
 
-    function showToast(msg, type) {
-        const t = document.getElementById('toast')
-        t.textContent = msg
-        t.className = 'toast ' + type
-    }
+function showToast(msg, type) {
+const t = document.getElementById('toast')
+t.textContent = msg
+t.className = 'toast ' + type
+}
 
-    async function handleSignIn() {
-        const email = document.getElementById('email').value.trim()
-        const pass  = document.getElementById('pass').value
-        if (!email || !pass) return showToast('Please fill in all fields.', 'error')
-        const btn = document.getElementById('btn')
-        btn.disabled = true
-        btn.textContent = 'Signing in...'
-        const { error } = await db.auth.signInWithPassword({ email, password: pass })
-        btn.disabled = false
-        btn.textContent = 'Sign In'
-        if (error) return showToast(error.message, 'error')
-        showToast('Welcome back! Redirecting...', 'success')
+async function handleSignIn() {
+const email = document.getElementById('email').value.trim()
+const pass  = document.getElementById('pass').value
+if (!email || !pass) return showToast('Please fill in all fields.', 'error')
+const btn = document.getElementById('btn')
+btn.disabled = true
+btn.textContent = 'Signing in...'
+const { error } = await db.auth.signInWithPassword({ email, password: pass })
+btn.disabled = false
+btn.textContent = 'Sign In'
+if (error) return showToast(error.message, 'error')
+showToast('Welcome back! Redirecting...', 'success')
         setTimeout(() => window.location.href = 'https://github.com/glutenbredd/el-letsoneros', 1200)
-    }
+}
+
+db.auth.getSession().then(({ data: { session } }) => {
+if (session) window.location.href = 'index.html'
+})
 </script>
 
 </body>
