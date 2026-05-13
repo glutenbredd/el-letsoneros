@@ -36,6 +36,7 @@ body { display: flex; flex-direction: column; min-height: 100vh; padding-top: 0;
 <input type="password" id="pass" placeholder="••••••••" />
 </div>
 <button class="btn-submit" id="btn" onclick="handleSignIn()">Sign In</button>
+<p class="switch-text">Don't have an account? <a href="signuppp.html">Sign up</a></p>
 </div>
 </div>
 <footer>&copy; 2025 <span>El Letsoneros</span> — Baclayon, Bohol</footer>
@@ -43,8 +44,7 @@ body { display: flex; flex-direction: column; min-height: 100vh; padding-top: 0;
 const { createClient } = supabase
 const db = createClient(
     'https://oqjbpfcekubulyeynywf.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xamJwZmNla3VidWx5ZXlueXdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNjE1MjYsImV4cCI6MjA5MDkzNzUyNn0.k9l3w3PfWEnQ4ph8BqUUVI1ODxNkG8D1aZU3ou-V91A',
-    { auth: { persistSession: false } }
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xamJwZmNla3VidWx5ZXlueXdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNjE1MjYsImV4cCI6MjA5MDkzNzUyNn0.k9l3w3PfWEnQ4ph8BqUUVI1ODxNkG8D1aZU3ou-V91A'
 )
 
 const params = new URLSearchParams(window.location.search)
@@ -66,12 +66,12 @@ async function handleSignIn() {
     const btn = document.getElementById('btn')
     btn.disabled = true
     btn.textContent = 'Signing in...'
-    const { error } = await db.auth.signInWithPassword({ email, password: pass })
+    const { data, error } = await db.auth.signInWithPassword({ email, password: pass })
     btn.disabled = false
     btn.textContent = 'Sign In'
     if (error) return showToast(error.message, 'error')
     showToast('Welcome back! Redirecting...', 'success')
-    setTimeout(() => window.location.href = 'https://github.com/glutenbredd/el-letsoneros', 1200)
+    setTimeout(() => window.location.href = 'index.html', 1200)
 }
 </script>
 </body>

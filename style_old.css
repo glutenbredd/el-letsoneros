@@ -790,149 +790,39 @@ footer span {
 }
 
 @media (max-width: 768px) {
-
-    /* ── CURSOR: hide on touch ── */
-    .cursor { display: none; }
-    body { cursor: auto; }
-
-    /* ── HEADER ── */
-    .header {
-        padding: 0.85rem 4%;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-    }
-
-    /* ── HAMBURGER ── */
-    .hamburger {
-        display: flex;
-        flex-direction: column;
-        gap: 5px;
-        cursor: pointer;
-        padding: 4px;
-        background: none;
-        border: none;
-        z-index: 200;
-    }
-    .hamburger span {
-        display: block;
-        width: 24px;
-        height: 2.5px;
-        background: var(--dark);
-        border-radius: 2px;
-        transition: transform 0.3s, opacity 0.3s;
-    }
-    .hamburger.open span:nth-child(1) { transform: translateY(7.5px) rotate(45deg); }
-    .hamburger.open span:nth-child(2) { opacity: 0; }
-    .hamburger.open span:nth-child(3) { transform: translateY(-7.5px) rotate(-45deg); }
-
-    /* ── NAV: slide-down drawer ── */
-    .navbar {
-        display: none;
-        flex-direction: column;
-        gap: 0;
-        width: 100%;
-        background: #FFFBF0;
-        border-top: 2px solid var(--dark);
-        padding: 0.5rem 0 1rem;
-        order: 3;
-    }
-    .navbar.open { display: flex; }
-    .navbar a {
-        padding: 0.65rem 4%;
-        font-size: 1rem;
-        border-bottom: 1px solid #e8e4d0;
-        width: 100%;
-    }
-    .navbar a:last-child { border-bottom: none; }
-    .navbar .nav-login-btn {
-        margin: 0.5rem 4% 0;
-        width: calc(100% - 8%);
-        text-align: center;
-        display: block;
-    }
-    #nav-admin-btn, #nav-auth-btn {
-        margin: 0.4rem 4% 0;
-        width: calc(100% - 8%);
-    }
-
-    /* ── HERO ── */
     .heading-section {
         flex-direction: column;
         text-align: center;
-        padding: 2rem 5% 2.5rem;
-        gap: 1.75rem;
-    }
-    .hero-left { max-width: 100%; }
-    .hero-left h1 { font-size: clamp(2.2rem, 10vw, 3.5rem); }
-    .hero-tagline { font-size: 0.95rem; }
-    .home-img { max-width: 75%; }
-    .hero-btn {
-        margin: 0 auto;
-        display: inline-flex;
+        padding: 3rem 5%;
+        gap: 2rem;
     }
 
-    /* ── SERVICES ── */
-    .services { padding: 2.5rem 5%; }
-    .services-grid { flex-direction: column; gap: 1rem; }
-    .service-card { padding: 1.5rem; }
-
-    /* ── FOOD CHOICES ── */
-    .foodchoices { padding: 2.5rem 5%; }
-    .food-list {
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 0.5rem;
+    .hero-left {
+        max-width: 100%;
     }
-    .food-list li {
-        font-size: 0.85rem;
-        padding: 0.5rem 1rem;
-    }
-    .gallery {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.75rem;
-    }
-    .gallery img { border-radius: 10px; }
 
-    /* ── HISTORY ── */
-    .history { padding: 2.5rem 5%; }
-    .history-content { flex-direction: column; gap: 2rem; }
-    .history-text p { font-size: 0.93rem; line-height: 1.75; }
-    .history-images { position: static; width: 100%; }
-    .slideshow { border-radius: 12px; }
-    .slideshow img { border-radius: 12px; }
+    .home-img {
+        max-width: 70%;
+     
+    }
 
-    /* ── CONTACT ── */
-    .Contact { padding: 2.5rem 5%; }
-    .contact-content {
+    .services-grid {
         flex-direction: column;
+    }
+
+    .navbar {
         gap: 1rem;
     }
-    .facebook-card, .email-card, .youtube-card {
+
+    .history-content {
         flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
-        padding: 1.25rem;
-    }
-    .facebook-visit-btn, .email-copy-btn, .youtube-visit-btn {
-        width: 100%;
-        text-align: center;
-        justify-content: center;
     }
 
-    /* ── FOOTER ── */
-    footer { font-size: 0.82rem; text-align: center; padding: 1.25rem 5%; }
+    .history-images {
+        position: static;
+    }
 
-    /* ── SECTION HEADINGS ── */
-    .services-header h2,
-    .foodchoices-header h2,
-    .history-header h2,
-    #contact-header-content h2 { font-size: clamp(1.8rem, 7vw, 2.5rem); }
-
-    /* ── LOGIN/SIGNUP CARDS ── */
-    .login-card { padding: 2rem 1.25rem; }
-
-    /* ── ORDER PAGE ── */
-    .order-main { flex-direction: column; padding: 1.5rem 4%; }
-    .cart-panel { width: 100%; }
-    .cart-sticky { position: static; }
+    .login-card {
+        padding: 2rem 1.5rem;
+    }
 }

@@ -1,0 +1,1818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400..800&display=swap" rel="stylesheet">
+<link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+<link href="style.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<title>Order | El Letsonero's</title>
+<link rel="icon" type="image/png" href="favicon.png" sizes="32x32" />
+<style>
+/* ── ORDER PAGE BASE ── */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding-top: 0;
+    cursor: auto;
+    background: var(--sand);
+}
+
+/* ── HERO STRIP ── */
+.order-hero {
+    background: var(--dark);
+    border-bottom: 4px solid var(--sun);
+    padding: 3rem 5% 2.5rem;
+    text-align: center;
+}
+.order-hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    color: var(--sun);
+    letter-spacing: 0.04em;
+    margin-bottom: 0.4rem;
+}
+.order-hero p {
+    color: #ccc;
+    font-size: 1rem;
+    font-style: italic;
+}
+
+/* ── STEP INDICATOR ── */
+.steps-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    background: #FFFBF0;
+    border-bottom: 3px solid var(--dark);
+    padding: 0.85rem 5%;
+}
+.step-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #aaa;
+    transition: color 0.3s;
+}
+.step-item.active { color: var(--dark-green); }
+.step-item.done   { color: var(--green); }
+.step-num {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    font-weight: 800;
+    transition: background 0.3s, color 0.3s;
+}
+.step-item.active .step-num {
+    background: var(--dark-green);
+    color: white;
+    border-color: var(--dark-green);
+}
+.step-item.done .step-num {
+    background: var(--green);
+    color: white;
+    border-color: var(--green);
+}
+.step-sep {
+    width: 40px;
+    height: 2px;
+    background: #ccc;
+    margin: 0 0.5rem;
+}
+
+/* ── MAIN LAYOUT ── */
+.order-main {
+    flex: 1;
+    display: flex;
+    gap: 2rem;
+    padding: 2.5rem 5%;
+    max-width: 1300px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* ── MENU PANEL ── */
+.menu-panel {
+    flex: 1;
+}
+.panel-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.4rem;
+    color: var(--red);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.menu-category {
+    margin-bottom: 2rem;
+}
+.menu-cat-label {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--mid-green);
+    border-bottom: 2px solid var(--dark);
+    padding-bottom: 0.4rem;
+    margin-bottom: 1rem;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: white;
+    border: 2px solid var(--dark);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 0.75rem;
+    box-shadow: 4px 4px 0 var(--dark);
+    transition: transform 0.15s, box-shadow 0.15s;
+    gap: 1rem;
+}
+.menu-item:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 var(--dark);
+}
+.menu-item-info { flex: 1; }
+.menu-item-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--dark);
+    margin-bottom: 0.2rem;
+}
+.menu-item-desc {
+    font-size: 0.82rem;
+    color: var(--body-text);
+    line-height: 1.5;
+}
+.menu-item-price {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.05rem;
+    color: var(--dark-green);
+    white-space: nowrap;
+    margin-right: 1rem;
+}
+.menu-item-unit {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #aaa;
+    display: block;
+}
+
+/* ── QTY CONTROLS ── */
+.qty-ctrl {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+.qty-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    border: 2px solid var(--dark);
+    background: var(--sand);
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1rem;
+    color: var(--dark);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, transform 0.1s;
+    box-shadow: 2px 2px 0 var(--dark);
+}
+.qty-btn:hover {
+    background: var(--sun);
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0 var(--dark);
+}
+.qty-val {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 0.95rem;
+    color: var(--dark);
+    min-width: 22px;
+    text-align: center;
+}
+
+/* ── WEIGHT INPUT (for per-kilo items) ── */
+.weight-input {
+    width: 70px;
+    height: 36px;
+    border: 2px solid var(--dark);
+    border-radius: 6px;
+    background: var(--cream);
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--dark);
+    text-align: center;
+    box-shadow: 2px 2px 0 var(--dark);
+}
+.weight-input:focus {
+    border-color: var(--dark-green);
+    outline: none;
+}
+
+/* ── ADD BUTTON ── */
+.add-btn {
+    padding: 0.45rem 1rem;
+    background: var(--dark-green);
+    color: white;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.82rem;
+    border: 2px solid var(--dark);
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 3px 3px 0 var(--dark);
+    transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+.add-btn:hover {
+    background: var(--red);
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0 var(--dark);
+}
+
+/* ── CART PANEL ── */
+.cart-panel {
+    width: 360px;
+    flex-shrink: 0;
+}
+.cart-sticky {
+    position: sticky;
+    top: 80px;
+}
+.cart-box {
+    background: white;
+    border: 3px solid var(--dark);
+    border-radius: 16px;
+    box-shadow: 6px 6px 0 var(--dark);
+    overflow: hidden;
+}
+.cart-header {
+    background: var(--dark);
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.cart-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    color: var(--sun);
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+.cart-badge {
+    background: var(--red);
+    color: white;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 0.7rem;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.cart-body {
+    padding: 1rem 1.5rem;
+    max-height: 320px;
+    overflow-y: auto;
+}
+.cart-empty {
+    text-align: center;
+    color: #bbb;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.85rem;
+    padding: 2rem 0;
+}
+.cart-empty i { font-size: 2.5rem; display: block; margin-bottom: 0.5rem; }
+
+.cart-line {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px dashed #e0e0d8;
+}
+.cart-line:last-child { border-bottom: none; }
+.cart-line-name {
+    flex: 1;
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--dark);
+    line-height: 1.3;
+}
+.cart-line-sub {
+    font-size: 0.72rem;
+    color: #aaa;
+    font-weight: 400;
+}
+.cart-line-price {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 0.9rem;
+    color: var(--dark-green);
+    white-space: nowrap;
+}
+.cart-remove {
+    width: 22px;
+    height: 22px;
+    border-radius: 4px;
+    border: 1.5px solid #e0e0d8;
+    background: transparent;
+    color: #bbb;
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, color 0.15s;
+}
+.cart-remove:hover { background: var(--red); color: white; border-color: var(--red); }
+
+.cart-footer {
+    padding: 1rem 1.5rem;
+    border-top: 2px solid var(--dark);
+    background: #FFFBF0;
+}
+.cart-total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 0.5rem;
+}
+.cart-total-label {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: var(--body-text);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+.cart-total-amount {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.4rem;
+    color: var(--dark);
+}
+.cart-total-note {
+    font-size: 0.72rem;
+    color: #aaa;
+    font-style: italic;
+    margin-bottom: 1rem;
+}
+.proceed-btn {
+    width: 100%;
+    padding: 0.85rem;
+    background: var(--red);
+    color: white;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 0.95rem;
+    border: 2px solid var(--dark);
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 4px 4px 0 var(--dark);
+    transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    letter-spacing: 0.04em;
+}
+.proceed-btn:hover {
+    background: #a93226;
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 var(--dark);
+}
+.proceed-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: 4px 4px 0 var(--dark);
+}
+
+/* ── CHECKOUT FORM ── */
+.checkout-section {
+    display: none;
+    flex: 1;
+    gap: 2rem;
+    padding: 2.5rem 5%;
+    max-width: 1300px;
+    margin: 0 auto;
+    width: 100%;
+}
+.checkout-section.visible { display: flex; }
+
+.checkout-form-wrap {
+    flex: 1;
+}
+.form-section {
+    background: white;
+    border: 2px solid var(--dark);
+    border-radius: 14px;
+    padding: 1.75rem;
+    box-shadow: 5px 5px 0 var(--dark);
+    margin-bottom: 1.5rem;
+}
+.form-section-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1rem;
+    color: var(--dark);
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-bottom: 2px solid var(--sand);
+    padding-bottom: 0.75rem;
+}
+.form-section-title i {
+    color: var(--dark-green);
+    font-size: 1.2rem;
+}
+.form-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+.form-row:last-child { margin-bottom: 0; }
+.form-field {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+.form-field label {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--dark-green);
+}
+.form-field input,
+.form-field select,
+.form-field textarea {
+    border: 2px solid #c5c5b0;
+    border-radius: 8px;
+    background: var(--cream);
+    font-family: 'Syne', sans-serif;
+    font-size: 0.92rem;
+    color: var(--dark);
+    padding: 0.55rem 0.9rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    width: 100%;
+}
+.form-field textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+    border-color: var(--accent-green);
+    box-shadow: 0 0 0 3px rgba(58,125,68,0.15);
+}
+.form-field .required-star { color: var(--red); }
+
+/* date/time row */
+.form-hint {
+    font-size: 0.72rem;
+    color: #aaa;
+    font-style: italic;
+    margin-top: 0.2rem;
+}
+
+/* payment options */
+.payment-opts {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+.pay-opt {
+    flex: 1;
+    min-width: 120px;
+    border: 2px solid #c5c5b0;
+    border-radius: 10px;
+    padding: 0.85rem;
+    cursor: pointer;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--dark);
+    text-align: center;
+    transition: border-color 0.2s, background 0.2s;
+    background: var(--cream);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+}
+.pay-opt i { font-size: 1.4rem; color: var(--mid-green); }
+.pay-opt input[type=radio] { display: none; }
+.pay-opt.selected {
+    border-color: var(--dark-green);
+    background: #e8f5e9;
+    box-shadow: 0 0 0 3px rgba(6,103,52,0.1);
+}
+
+/* order summary sidebar in checkout */
+.checkout-summary {
+    width: 320px;
+    flex-shrink: 0;
+}
+.summary-box {
+    background: white;
+    border: 3px solid var(--dark);
+    border-radius: 14px;
+    box-shadow: 6px 6px 0 var(--dark);
+    overflow: hidden;
+    position: sticky;
+    top: 80px;
+}
+.summary-header {
+    background: var(--dark-green);
+    padding: 0.9rem 1.25rem;
+}
+.summary-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    color: white;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+.summary-body {
+    padding: 1rem 1.25rem;
+}
+.summary-line {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.85rem;
+    color: var(--dark);
+    margin-bottom: 0.6rem;
+    gap: 0.5rem;
+}
+.summary-line-name { flex: 1; font-weight: 600; }
+.summary-line-price { font-weight: 700; white-space: nowrap; color: var(--dark-green); }
+.summary-divider {
+    border: none;
+    border-top: 2px dashed #ddd;
+    margin: 0.75rem 0;
+}
+.summary-total {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.15rem;
+    color: var(--dark);
+}
+.summary-footer {
+    padding: 1rem 1.25rem;
+    border-top: 2px solid var(--dark);
+    background: #FFFBF0;
+}
+.place-order-btn {
+    width: 100%;
+    padding: 0.9rem;
+    background: var(--dark-green);
+    color: white;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 0.95rem;
+    border: 2px solid var(--dark);
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 4px 4px 0 var(--dark);
+    transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    letter-spacing: 0.03em;
+    margin-bottom: 0.75rem;
+}
+.place-order-btn:hover {
+    background: #054e27;
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 var(--dark);
+}
+.place-order-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+.back-to-menu-btn {
+    width: 100%;
+    padding: 0.6rem;
+    background: transparent;
+    color: var(--body-text);
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 0.82rem;
+    border: 1.5px solid #ccc;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+}
+.back-to-menu-btn:hover { border-color: var(--dark); color: var(--dark); }
+
+/* ── CONFIRMATION SCREEN ── */
+.confirm-section {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    padding: 3rem 5%;
+    flex: 1;
+}
+.confirm-section.visible { display: flex; }
+
+.confirm-card {
+    background: white;
+    border: 3px solid var(--dark);
+    border-radius: 20px;
+    box-shadow: 8px 8px 0 var(--dark);
+    padding: 3rem 2.5rem;
+    max-width: 580px;
+    width: 100%;
+    text-align: center;
+}
+.confirm-icon {
+    font-size: 4rem;
+    color: var(--dark-green);
+    margin-bottom: 1rem;
+}
+.confirm-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.8rem;
+    color: var(--dark);
+    margin-bottom: 0.5rem;
+}
+.confirm-sub {
+    color: var(--body-text);
+    font-size: 0.95rem;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+.order-number-box {
+    background: var(--sand);
+    border: 3px solid var(--dark);
+    border-radius: 14px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 4px 4px 0 var(--dark);
+}
+.order-number-label {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--mid-green);
+    margin-bottom: 0.4rem;
+}
+.order-number-value {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 2.2rem;
+    color: var(--red);
+    letter-spacing: 0.1em;
+}
+.order-number-hint {
+    font-size: 0.78rem;
+    color: #aaa;
+    margin-top: 0.4rem;
+    font-style: italic;
+}
+.confirm-details {
+    text-align: left;
+    background: #FFFBF0;
+    border: 2px solid #e0e0d8;
+    border-radius: 10px;
+    padding: 1.25rem;
+    margin-bottom: 2rem;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.85rem;
+    color: var(--dark);
+}
+.confirm-detail-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.6rem;
+    align-items: flex-start;
+}
+.confirm-detail-row:last-child { margin-bottom: 0; }
+.confirm-detail-key {
+    font-weight: 700;
+    color: var(--dark-green);
+    min-width: 100px;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+.confirm-detail-val { flex: 1; color: var(--dark); }
+.new-order-btn {
+    padding: 0.85rem 2rem;
+    background: var(--red);
+    color: white;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 0.95rem;
+    border: 2px solid var(--dark);
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 4px 4px 0 var(--dark);
+    transition: transform 0.15s, box-shadow 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-right: 0.75rem;
+}
+.new-order-btn:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--dark); }
+.home-link-btn {
+    padding: 0.85rem 2rem;
+    background: transparent;
+    color: var(--dark);
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    border: 2px solid var(--dark);
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 3px 3px 0 var(--dark);
+    transition: transform 0.15s, box-shadow 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+.home-link-btn:hover { transform: translate(-2px,-2px); box-shadow: 5px 5px 0 var(--dark); }
+
+/* ── ORDER TRACKER ── */
+.tracker-section {
+    padding: 2rem 5%;
+    max-width: 900px;
+    margin: 0 auto;
+    width: 100%;
+}
+.tracker-toggle {
+    background: var(--sand);
+    border: 2px solid var(--dark);
+    border-radius: 10px;
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    box-shadow: 3px 3px 0 var(--dark);
+    transition: transform 0.15s, box-shadow 0.15s;
+    font-family: 'Syne', sans-serif;
+}
+.tracker-toggle:hover { transform: translate(-1px,-1px); box-shadow: 5px 5px 0 var(--dark); }
+.tracker-toggle-title {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--dark);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.tracker-toggle-sub { font-size: 0.78rem; color: #aaa; font-weight: 400; }
+.tracker-body {
+    display: none;
+    background: white;
+    border: 2px solid var(--dark);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    padding: 1.5rem;
+    box-shadow: 3px 4px 0 var(--dark);
+}
+.tracker-body.open { display: block; }
+.tracker-search-row {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+.tracker-input {
+    flex: 1;
+    height: 42px;
+    border: 2px solid #c5c5b0;
+    border-radius: 8px;
+    background: var(--cream);
+    font-family: 'Syne', sans-serif;
+    font-size: 0.95rem;
+    color: var(--dark);
+    padding: 0 12px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+.tracker-input:focus { border-color: var(--accent-green); }
+.tracker-btn {
+    padding: 0.55rem 1.25rem;
+    background: var(--dark-green);
+    color: white;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    border: 2px solid var(--dark);
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 3px 3px 0 var(--dark);
+    transition: transform 0.15s, background 0.15s;
+}
+.tracker-btn:hover { background: var(--mid-green); transform: translate(-1px,-1px); }
+.tracker-result {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.88rem;
+    color: var(--dark);
+}
+.track-card {
+    border: 2px solid var(--dark);
+    border-radius: 10px;
+    overflow: hidden;
+}
+.track-card-head {
+    background: var(--dark);
+    padding: 0.75rem 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.track-order-num {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    color: var(--sun);
+    font-size: 1rem;
+}
+.track-status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+.status-pending   { background: #fff3cd; color: #856404; }
+.status-confirmed { background: #d1ecf1; color: #0c5460; }
+.status-preparing { background: #fff3e0; color: #e65100; }
+.status-ready     { background: #d4edda; color: #155724; }
+.status-delivered { background: #cce5ff; color: #004085; }
+.status-cancelled { background: #f8d7da; color: #721c24; }
+
+.track-card-body {
+    padding: 1rem 1.25rem;
+}
+.track-info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 0.85rem;
+}
+.track-info-key { color: #aaa; font-weight: 600; }
+.track-info-val { color: var(--dark); font-weight: 700; }
+.track-items-list {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px dashed #ddd;
+}
+.track-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.82rem;
+    color: var(--body-text);
+    margin-bottom: 0.35rem;
+}
+.track-total-row {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 800;
+    font-size: 0.95rem;
+    color: var(--dark);
+    border-top: 2px solid var(--dark);
+    padding-top: 0.6rem;
+    margin-top: 0.4rem;
+}
+
+/* ── TOAST ── */
+.order-toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: var(--dark);
+    color: white;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.88rem;
+    padding: 0.85rem 1.5rem;
+    border-radius: 10px;
+    border: 2px solid var(--sun);
+    box-shadow: 4px 4px 0 var(--sun);
+    z-index: 9999;
+    transform: translateY(0);
+    opacity: 1;
+    transition: opacity 0.4s, transform 0.4s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    max-width: 320px;
+}
+.order-toast.hide { opacity: 0; transform: translateY(20px); pointer-events: none; }
+.order-toast.success { border-color: var(--dark-green); box-shadow: 4px 4px 0 var(--dark-green); }
+.order-toast.error   { border-color: var(--red); box-shadow: 4px 4px 0 var(--red); }
+
+/* ── QR CODE ── */
+.qr-section {
+    margin: 1.75rem 0 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+}
+.qr-label {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--mid-green);
+}
+.qr-frame {
+    background: white;
+    border: 3px solid var(--dark);
+    border-radius: 14px;
+    padding: 1rem;
+    box-shadow: 5px 5px 0 var(--dark);
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+}
+.qr-frame canvas, .qr-frame img { display: block; border-radius: 4px; }
+.qr-hint {
+    font-size: 0.72rem;
+    color: #aaa;
+    font-style: italic;
+    text-align: center;
+    max-width: 200px;
+    line-height: 1.4;
+}
+.qr-download-btn {
+    margin-top: 0.25rem;
+    padding: 0.4rem 1.1rem;
+    background: var(--dark);
+    color: var(--sun);
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.78rem;
+    border: 2px solid var(--dark);
+    border-radius: 7px;
+    cursor: pointer;
+    box-shadow: 2px 2px 0 var(--sun);
+    transition: transform 0.15s, box-shadow 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+.qr-download-btn:hover {
+    transform: translate(-1px,-1px);
+    box-shadow: 3px 3px 0 var(--sun);
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+    .order-main, .checkout-section { flex-direction: column; }
+    .cart-panel, .checkout-summary { width: 100%; }
+    .cart-sticky, .summary-box { position: static; }
+    .form-row { flex-direction: column; }
+}
+@media (max-width: 600px) {
+    .menu-item { flex-wrap: wrap; }
+    .steps-bar { gap: 0.3rem; }
+    .step-sep { width: 20px; }
+    .order-hero h1 { font-size: 1.8rem; }
+    .confirm-card { padding: 2rem 1.25rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header class="header">
+    <a href="index.html" class="logo">El Letsonero's</a>
+    <nav class="navbar">
+        <a href="index.html"><i class="bx bx-home" style="font-size:1.4rem"></i></a>
+        <a href="index.html#services">Services</a>
+        <a href="index.html#food-choices">Menu</a>
+        <a href="index.html#contact">Contact</a>
+        <button id="nav-auth-btn" style="
+            background:var(--dark-green);color:var(--white);
+            padding:0.4rem 1rem;border-radius:6px;border:2px solid var(--dark);
+            box-shadow:2px 2px 0 var(--dark);font-family:'Syne',sans-serif;
+            font-weight:700;font-size:0.88rem;cursor:pointer;display:none;
+            transition:transform .15s,box-shadow .15s,background .15s;">Sign Out</button>
+    </nav>
+</header>
+
+<!-- ── HERO ── -->
+<div class="order-hero">
+    <h1><i class="bx bx-food-menu" style="vertical-align:middle;font-size:0.9em"></i> PLACE AN ORDER</h1>
+    <p>Fresh lechon, straight from our kitchen to your door — Baclayon, Bohol</p>
+</div>
+
+<!-- ── STEPS ── -->
+<div class="steps-bar" id="steps-bar">
+    <div class="step-item active" id="step1">
+        <span class="step-num">1</span> Build Your Order
+    </div>
+    <div class="step-sep"></div>
+    <div class="step-item" id="step2">
+        <span class="step-num">2</span> Your Details
+    </div>
+    <div class="step-sep"></div>
+    <div class="step-item" id="step3">
+        <span class="step-num">3</span> Confirmed!
+    </div>
+</div>
+
+<!-- ── STEP 1: MENU + CART ── -->
+<div class="order-main" id="page-menu">
+
+    <!-- MENU -->
+    <div class="menu-panel">
+        <div class="panel-title"><i class="bx bx-bowl-hot"></i> Our Menu</div>
+
+        <!-- Menu items loaded dynamically from Supabase -->
+        <div id="menu-dynamic-container">
+            <div style="text-align:center;padding:3rem 0;color:#aaa;font-family:'Syne',sans-serif;">
+                <i class="bx bx-loader-alt bx-spin" style="font-size:2rem;display:block;margin-bottom:0.5rem;"></i>
+                Loading menu…
+            </div>
+        </div>
+
+    </div><!-- /menu-panel -->
+
+    <!-- CART -->
+    <div class="cart-panel">
+        <div class="cart-sticky">
+            <div class="cart-box">
+                <div class="cart-header">
+                    <div class="cart-title">
+                        <i class="bx bx-cart"></i> Your Cart
+                        <span class="cart-badge" id="cart-badge">0</span>
+                    </div>
+                </div>
+                <div class="cart-body" id="cart-body">
+                    <div class="cart-empty" id="cart-empty">
+                        <i class="bx bx-bowl-hot"></i>
+                        Your cart is empty.<br>Pick something delicious!
+                    </div>
+                </div>
+                <div class="cart-footer">
+                    <div class="cart-total-row">
+                        <span class="cart-total-label">Estimated Total</span>
+                        <span class="cart-total-amount" id="cart-total">₱0</span>
+                    </div>
+                    <p class="cart-total-note">Delivery fee may apply depending on location.</p>
+                    <button class="proceed-btn" id="proceed-btn" onclick="goToCheckout()" disabled>
+                        Proceed to Checkout <i class="bx bx-right-arrow-alt"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ORDER TRACKER -->
+            <div class="tracker-section" style="padding: 1.25rem 0 0;">
+                <div class="tracker-toggle" onclick="toggleTracker()">
+                    <div>
+                        <div class="tracker-toggle-title"><i class="bx bx-search-alt-2"></i> Track Your Order</div>
+                        <div class="tracker-toggle-sub">Enter your order number to check status</div>
+                    </div>
+                    <i class="bx bx-chevron-down" id="tracker-chevron" style="font-size:1.4rem;color:#aaa;"></i>
+                </div>
+                <div class="tracker-body" id="tracker-body">
+                    <div class="tracker-search-row">
+                        <input type="text" class="tracker-input" id="tracker-input" placeholder="e.g. ELL-240001" />
+                        <button class="tracker-btn" onclick="trackOrder()"><i class="bx bx-search"></i> Track</button>
+                    </div>
+                    <div class="tracker-result" id="tracker-result"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div><!-- /page-menu -->
+
+<!-- ── STEP 2: CHECKOUT FORM ── -->
+<div class="checkout-section" id="page-checkout">
+
+    <div class="checkout-form-wrap">
+        <div class="panel-title"><i class="bx bx-user-circle"></i> Your Details</div>
+
+        <div class="form-section">
+            <div class="form-section-title"><i class="bx bx-user"></i> Contact Information</div>
+            <div class="form-row">
+                <div class="form-field">
+                    <label>Full Name <span class="required-star">*</span></label>
+                    <input type="text" id="f-name" placeholder="Juan dela Cruz" />
+                </div>
+                <div class="form-field">
+                    <label>Phone Number <span class="required-star">*</span></label>
+                    <input type="tel" id="f-phone" placeholder="09XX XXX XXXX" />
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-field">
+                    <label>Email (optional)</label>
+                    <input type="email" id="f-email" placeholder="you@example.com" />
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <div class="form-section-title"><i class="bx bx-map"></i> Delivery / Pickup</div>
+            <div class="form-row">
+                <div class="form-field">
+                    <label>Order Type <span class="required-star">*</span></label>
+                    <select id="f-type" onchange="toggleDelivery()">
+                        <option value="">— Select —</option>
+                        <option value="delivery">House-to-House Delivery</option>
+                        <option value="pickup">Pickup (Baclayon)</option>
+                    </select>
+                </div>
+            </div>
+            <div id="delivery-fields" style="display:none">
+                <div class="form-row">
+                    <div class="form-field">
+                        <label>Delivery Address <span class="required-star">*</span></label>
+                        <input type="text" id="f-address" placeholder="Street, Barangay, Municipality" />
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-field">
+                    <label>Preferred Date <span class="required-star">*</span></label>
+                    <input type="date" id="f-date" />
+                    <span class="form-hint">Orders need at least 1 day advance notice</span>
+                </div>
+                <div class="form-field">
+                    <label>Preferred Time</label>
+                    <select id="f-time">
+                        <option value="">— Flexible —</option>
+                        <option value="morning">Morning (6AM–11AM)</option>
+                        <option value="noon">Noon (11AM–2PM)</option>
+                        <option value="afternoon">Afternoon (2PM–6PM)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <div class="form-section-title"><i class="bx bx-wallet"></i> Payment Method</div>
+            <div class="payment-opts" id="payment-opts">
+                <label class="pay-opt" id="pay-cod">
+                    <input type="radio" name="payment" value="cod" onchange="selectPayment('pay-cod')">
+                    <i class="bx bx-money"></i> Cash on Delivery / Pickup
+                </label>
+                <label class="pay-opt" id="pay-gcash">
+                    <input type="radio" name="payment" value="gcash" onchange="selectPayment('pay-gcash')">
+                    <i class="bx bx-mobile-alt"></i> GCash
+                </label>
+                <label class="pay-opt" id="pay-bank">
+                    <input type="radio" name="payment" value="bank" onchange="selectPayment('pay-bank')">
+                    <i class="bx bx-credit-card"></i> Bank Transfer
+                </label>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <div class="form-section-title"><i class="bx bx-note"></i> Special Notes</div>
+            <div class="form-row">
+                <div class="form-field">
+                    <label>Any requests or notes?</label>
+                    <textarea id="f-notes" placeholder="e.g. Extra liver sauce, call upon arrival, gate code…"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUMMARY SIDEBAR -->
+    <div class="checkout-summary">
+        <div class="summary-box">
+            <div class="summary-header">
+                <div class="summary-title"><i class="bx bx-receipt"></i> Order Summary</div>
+            </div>
+            <div class="summary-body" id="summary-body"></div>
+            <div class="summary-footer">
+                <div id="form-error" style="display:none;color:var(--red);font-family:'Syne',sans-serif;font-weight:700;font-size:0.82rem;margin-bottom:0.75rem;padding:0.5rem 0.75rem;background:#fdecea;border-radius:6px;border:1.5px solid #e57373;"></div>
+                <button class="place-order-btn" id="place-btn" onclick="placeOrder()">
+                    <i class="bx bx-check-circle"></i> Place Order
+                </button>
+                <button class="back-to-menu-btn" onclick="goBackToMenu()">
+                    <i class="bx bx-left-arrow-alt"></i> Back to Menu
+                </button>
+            </div>
+        </div>
+    </div>
+
+</div><!-- /page-checkout -->
+
+<!-- ── STEP 3: CONFIRMATION ── -->
+<div class="confirm-section" id="page-confirm">
+    <div class="confirm-card">
+        <div class="confirm-icon"><i class="bx bx-check-shield"></i></div>
+        <div class="confirm-title">Order Placed!</div>
+        <p class="confirm-sub">Salamat! Your order has been received. We'll reach out to confirm details shortly.</p>
+
+        <div class="order-number-box">
+            <div class="order-number-label">Your Order Number</div>
+            <div class="order-number-value" id="conf-order-num">ELL-000000</div>
+            <div class="order-number-hint">Keep this number to track your order status.</div>
+        </div>
+
+        <div class="confirm-details" id="conf-details"></div>
+
+        <!-- QR CODE -->
+        <div class="qr-section">
+            <div class="qr-label"><i class="bx bx-qr" style="vertical-align:middle;font-size:1rem;"></i> Order QR Code</div>
+            <div class="qr-frame">
+                <div id="qr-canvas"></div>
+                <div class="qr-hint">Scan to track this order or share with El Letsonero's staff</div>
+                <button class="qr-download-btn" onclick="downloadQR()">
+                    <i class="bx bx-download"></i> Save QR
+                </button>
+            </div>
+        </div>
+
+        <div>
+            <button class="new-order-btn" onclick="startNewOrder()"><i class="bx bx-refresh"></i> New Order</button>
+            <a href="index.html"><button class="home-link-btn"><i class="bx bx-home"></i> Home</button></a>
+        </div>
+    </div>
+</div>
+
+<!-- TOAST -->
+<div class="order-toast hide" id="order-toast"></div>
+
+<footer>&copy; 2025 <span>El Letsoneros</span> — Baclayon, Bohol</footer>
+
+<script>
+// ─── SUPABASE ───────────────────────────────────────────
+const { createClient } = supabase
+const db = createClient(
+    'https://oqjbpfcekubulyeynywf.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xamJwZmNla3VidWx5ZXlueXdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNjE1MjYsImV4cCI6MjA5MDkzNzUyNn0.k9l3w3PfWEnQ4ph8BqUUVI1ODxNkG8D1aZU3ou-V91A'
+)
+
+// ─── AUTH ────────────────────────────────────────────────
+db.auth.getSession().then(({ data: { session } }) => {
+    const authBtn = document.getElementById('nav-auth-btn')
+    if (session) {
+        authBtn.style.display = 'inline-block'
+        authBtn.addEventListener('click', async () => {
+            await db.auth.signOut()
+            window.location.reload()
+        })
+    }
+})
+
+// ─── CART STATE ──────────────────────────────────────────
+let cart = []
+let menuItems = [] // loaded from Supabase
+
+// ─── LOAD MENU FROM SUPABASE ──────────────────────────────
+async function loadMenu() {
+    const container = document.getElementById('menu-dynamic-container')
+    const { data, error } = await db
+        .from('menu_items')
+        .select('*')
+        .eq('is_available', true)
+        .order('category')
+        .order('sort_order')
+
+    if (error || !data || data.length === 0) {
+        // Fallback to default menu if table doesn't exist yet or is empty
+        menuItems = getDefaultMenu()
+    } else {
+        menuItems = data
+    }
+
+    renderMenu()
+}
+
+function getDefaultMenu() {
+    return [
+        { id: 'sm-1', category: '🐷 Whole Lechon', name: 'Whole Lechon — Small', description: 'Perfect for 20–30 guests. Crispy skin, tender meat.', price: 3500, unit: 'piece', pricing_type: 'fixed', sort_order: 1, is_available: true },
+        { id: 'sm-2', category: '🐷 Whole Lechon', name: 'Whole Lechon — Large', description: 'Serves 40–60 guests. The centerpiece of any fiesta.', price: 5500, unit: 'piece', pricing_type: 'fixed', sort_order: 2, is_available: true },
+        { id: 'sm-3', category: '🔪 Chopped Per Kilo', name: 'Lechon — Chopped Per Kilo', description: 'Freshly chopped lechon. Minimum 1 kg. Enter desired weight.', price: 420, unit: 'kilo', pricing_type: 'per_kilo', sort_order: 3, is_available: true },
+        { id: 'sm-4', category: '🥩 Lechon Belly', name: 'Lechon Belly Roll', description: 'Stuffed & roasted belly roll. Juicy inside, crackling outside.', price: 1800, unit: 'roll', pricing_type: 'fixed', sort_order: 4, is_available: true },
+        { id: 'sm-5', category: '🐔 Native Chicken', name: 'Native Chicken (Manok)', description: 'Free-range native chicken, roasted to perfection.', price: 450, unit: 'piece', pricing_type: 'fixed', sort_order: 5, is_available: true },
+    ]
+}
+
+function renderMenu() {
+    const container = document.getElementById('menu-dynamic-container')
+    if (!menuItems || menuItems.length === 0) {
+        container.innerHTML = `<div style="text-align:center;padding:3rem;color:#aaa;font-family:'Syne',sans-serif;">No menu items available right now.</div>`
+        return
+    }
+
+    // Group by category
+    const groups = {}
+    menuItems.forEach(item => {
+        const cat = item.category || 'Other'
+        if (!groups[cat]) groups[cat] = []
+        groups[cat].push(item)
+    })
+
+    container.innerHTML = Object.entries(groups).map(([cat, items]) => `
+        <div class="menu-category">
+            <div class="menu-cat-label">${cat}</div>
+            ${items.map(item => {
+                if (item.pricing_type === 'per_kilo') {
+                    return `
+                    <div class="menu-item" data-item-id="${item.id}">
+                        <div class="menu-item-info">
+                            <div class="menu-item-name">${item.name}</div>
+                            <div class="menu-item-desc">${item.description || ''}</div>
+                        </div>
+                        <div class="menu-item-price">₱${Number(item.price).toLocaleString()}<span class="menu-item-unit">per kilo</span></div>
+                        <div class="qty-ctrl">
+                            <input type="number" class="weight-input" value="1" min="1" max="50" step="0.5" id="kilo-weight-${item.id}" placeholder="kg">
+                            <span style="font-family:'Syne';font-size:0.78rem;color:#aaa;">kg</span>
+                        </div>
+                        <button class="add-btn" onclick="addKiloToCart('${item.id}','${item.name.replace(/'/g,"\\'")}',${item.price})">
+                            <i class="bx bx-plus"></i> Add
+                        </button>
+                    </div>`
+                } else {
+                    return `
+                    <div class="menu-item" data-item-id="${item.id}">
+                        <div class="menu-item-info">
+                            <div class="menu-item-name">${item.name}</div>
+                            <div class="menu-item-desc">${item.description || ''}</div>
+                        </div>
+                        <div class="menu-item-price">₱${Number(item.price).toLocaleString()}<span class="menu-item-unit">per ${item.unit || 'piece'}</span></div>
+                        <div class="qty-ctrl">
+                            <button class="qty-btn" onclick="adjustQty(this,-1)">−</button>
+                            <span class="qty-val">0</span>
+                            <button class="qty-btn" onclick="adjustQty(this,1)">+</button>
+                        </div>
+                        <button class="add-btn" onclick="addToCart(this,'${item.name.replace(/'/g,"\\'")}',${item.price},'${(item.unit||'piece').replace(/'/g,"\\'")}')">
+                            <i class="bx bx-plus"></i> Add
+                        </button>
+                    </div>`
+                }
+            }).join('')}
+        </div>
+    `).join('')
+}
+
+// Load menu on page start
+loadMenu()
+
+function adjustQty(btn, delta) {
+    const ctrl = btn.closest('.qty-ctrl')
+    const val  = ctrl.querySelector('.qty-val')
+    let n = Math.max(0, parseInt(val.textContent) + delta)
+    val.textContent = n
+}
+
+function addToCart(btn, name, price, unit) {
+    const ctrl = btn.closest('.menu-item').querySelector('.qty-ctrl')
+    const val  = ctrl.querySelector('.qty-val')
+    let qty = parseInt(val.textContent)
+    if (qty === 0) { showToast('Set a quantity first!', 'error'); return }
+    const existing = cart.find(i => i.name === name)
+    if (existing) existing.qty += qty
+    else cart.push({ name, price, unit, qty, subtotal: price * qty })
+    cart.forEach(i => i.subtotal = i.price * i.qty)
+    val.textContent = 0
+    renderCart()
+    showToast(`${qty}× ${name} added!`, 'success')
+}
+
+function addKiloToCart(itemId, itemName, pricePerKilo) {
+    const wInput = document.getElementById('kilo-weight-' + itemId)
+    const kg = parseFloat(wInput.value)
+    if (!kg || kg < 1) { showToast('Enter at least 1 kg.', 'error'); return }
+    const name = `${itemName} (${kg}kg)`
+    const price = Math.round(pricePerKilo * kg)
+    cart.push({ name, price, unit: `${kg}kg`, qty: 1, subtotal: price })
+    wInput.value = 1
+    renderCart()
+    showToast(`${kg}kg added!`, 'success')
+}
+
+function removeFromCart(idx) {
+    cart.splice(idx, 1)
+    renderCart()
+}
+
+function renderCart() {
+    const body  = document.getElementById('cart-body')
+    const empty = document.getElementById('cart-empty')
+    const badge = document.getElementById('cart-badge')
+    const total = document.getElementById('cart-total')
+    const btn   = document.getElementById('proceed-btn')
+
+    if (cart.length === 0) {
+        empty.style.display = 'block'
+        badge.textContent = 0
+        total.textContent = '₱0'
+        btn.disabled = true
+        // clear dynamic lines
+        body.querySelectorAll('.cart-line').forEach(l => l.remove())
+        return
+    }
+
+    empty.style.display = 'none'
+    body.querySelectorAll('.cart-line').forEach(l => l.remove())
+
+    cart.forEach((item, i) => {
+        const line = document.createElement('div')
+        line.className = 'cart-line'
+        line.innerHTML = `
+            <div class="cart-line-name">
+                ${item.name}
+                <span class="cart-line-sub">${item.qty > 1 ? item.qty+'×' : ''} ₱${item.price.toLocaleString()}</span>
+            </div>
+            <div class="cart-line-price">₱${item.subtotal.toLocaleString()}</div>
+            <button class="cart-remove" onclick="removeFromCart(${i})" title="Remove"><i class="bx bx-x"></i></button>
+        `
+        body.insertBefore(line, body.firstChild)
+    })
+
+    const grandTotal = cart.reduce((s,i) => s + i.subtotal, 0)
+    const count = cart.reduce((s,i) => s + i.qty, 0)
+    badge.textContent = count
+    total.textContent = '₱' + grandTotal.toLocaleString()
+    btn.disabled = false
+}
+
+// ─── STEP NAVIGATION ─────────────────────────────────────
+function setStep(n) {
+    ;[1,2,3].forEach(i => {
+        const el = document.getElementById('step'+i)
+        el.classList.remove('active','done')
+        if (i < n) el.classList.add('done')
+        if (i === n) el.classList.add('active')
+    })
+}
+
+function goToCheckout() {
+    if (cart.length === 0) return
+    document.getElementById('page-menu').style.display = 'none'
+    document.getElementById('page-checkout').classList.add('visible')
+    renderSummary()
+    setStep(2)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+function goBackToMenu() {
+    document.getElementById('page-checkout').classList.remove('visible')
+    document.getElementById('page-menu').style.display = 'flex'
+    setStep(1)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+function renderSummary() {
+    const body = document.getElementById('summary-body')
+    const grandTotal = cart.reduce((s,i) => s + i.subtotal, 0)
+    body.innerHTML = cart.map(i => `
+        <div class="summary-line">
+            <span class="summary-line-name">${i.name}</span>
+            <span class="summary-line-price">₱${i.subtotal.toLocaleString()}</span>
+        </div>
+    `).join('') + `
+        <hr class="summary-divider">
+        <div class="summary-total">
+            <span>Total</span>
+            <span>₱${grandTotal.toLocaleString()}</span>
+        </div>
+    `
+}
+
+// ─── FORM HELPERS ────────────────────────────────────────
+function toggleDelivery() {
+    const t = document.getElementById('f-type').value
+    document.getElementById('delivery-fields').style.display = t === 'delivery' ? 'block' : 'none'
+}
+
+function selectPayment(id) {
+    document.querySelectorAll('.pay-opt').forEach(el => el.classList.remove('selected'))
+    document.getElementById(id).classList.add('selected')
+}
+
+// Set min date to tomorrow
+const tomorrow = new Date()
+tomorrow.setDate(tomorrow.getDate() + 1)
+document.getElementById('f-date').min = tomorrow.toISOString().split('T')[0]
+
+// ─── ORDER NUMBER GENERATOR ──────────────────────────────
+function genOrderNum() {
+    const y  = new Date().getFullYear().toString().slice(-2)
+    const mo = String(new Date().getMonth()+1).padStart(2,'0')
+    const rand = String(Math.floor(Math.random() * 99999)).padStart(5,'0')
+    return `ELL-${y}${mo}${rand}`
+}
+
+// ─── PLACE ORDER ─────────────────────────────────────────
+async function placeOrder() {
+    const name    = document.getElementById('f-name').value.trim()
+    const phone   = document.getElementById('f-phone').value.trim()
+    const email   = document.getElementById('f-email').value.trim()
+    const type    = document.getElementById('f-type').value
+    const address = document.getElementById('f-address').value.trim()
+    const date    = document.getElementById('f-date').value
+    const time    = document.getElementById('f-time').value
+    const payment = document.querySelector('input[name=payment]:checked')?.value || ''
+    const notes   = document.getElementById('f-notes').value.trim()
+
+    const errEl = document.getElementById('form-error')
+    errEl.style.display = 'none'
+
+    const errors = []
+    if (!name)    errors.push('Full name is required.')
+    if (!phone)   errors.push('Phone number is required.')
+    if (!type)    errors.push('Please select Delivery or Pickup.')
+    if (type === 'delivery' && !address) errors.push('Delivery address is required.')
+    if (!date)    errors.push('Please pick a preferred date.')
+    if (!payment) errors.push('Please select a payment method.')
+
+    if (errors.length) {
+        errEl.textContent = errors[0]
+        errEl.style.display = 'block'
+        return
+    }
+
+    const btn = document.getElementById('place-btn')
+    btn.disabled = true
+    btn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Placing Order…'
+
+    const orderNum   = genOrderNum()
+    const grandTotal = cart.reduce((s,i) => s + i.subtotal, 0)
+
+    const orderData = {
+        order_number:    orderNum,
+        customer_name:   name,
+        customer_phone:  phone,
+        customer_email:  email || null,
+        order_type:      type,
+        delivery_address: type === 'delivery' ? address : null,
+        preferred_date:  date,
+        preferred_time:  time || 'flexible',
+        payment_method:  payment,
+        notes:           notes || null,
+        items:           JSON.stringify(cart),
+        total_amount:    grandTotal,
+        status:          'pending',
+        created_at:      new Date().toISOString()
+    }
+
+    try {
+        const { error } = await db.from('orders').insert([orderData])
+        if (error) {
+            // If table doesn't exist yet, still show confirmation (graceful fallback)
+            console.warn('Supabase insert error:', error.message)
+        }
+    } catch (e) {
+        console.warn('Network error:', e)
+    }
+
+    // Show confirmation regardless of DB result
+    showConfirmation(orderNum, orderData)
+
+    btn.disabled = false
+    btn.innerHTML = '<i class="bx bx-check-circle"></i> Place Order'
+}
+
+function showConfirmation(orderNum, data) {
+    document.getElementById('page-checkout').classList.remove('visible')
+    document.getElementById('page-confirm').classList.add('visible')
+    setStep(3)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+
+    document.getElementById('conf-order-num').textContent = orderNum
+
+    const payLabels = { cod: 'Cash on Delivery/Pickup', gcash: 'GCash', bank: 'Bank Transfer' }
+    const timeLabels = { morning: 'Morning (6AM–11AM)', noon: 'Noon (11AM–2PM)', afternoon: 'Afternoon (2PM–6PM)', flexible: 'Flexible' }
+
+    document.getElementById('conf-details').innerHTML = `
+        <div class="confirm-detail-row">
+            <span class="confirm-detail-key">Name</span>
+            <span class="confirm-detail-val">${data.customer_name}</span>
+        </div>
+        <div class="confirm-detail-row">
+            <span class="confirm-detail-key">Phone</span>
+            <span class="confirm-detail-val">${data.customer_phone}</span>
+        </div>
+        <div class="confirm-detail-row">
+            <span class="confirm-detail-key">Type</span>
+            <span class="confirm-detail-val">${data.order_type === 'delivery' ? '🏠 House-to-House Delivery' : '📦 Pickup'}</span>
+        </div>
+        ${data.delivery_address ? `<div class="confirm-detail-row"><span class="confirm-detail-key">Address</span><span class="confirm-detail-val">${data.delivery_address}</span></div>` : ''}
+        <div class="confirm-detail-row">
+            <span class="confirm-detail-key">Date</span>
+            <span class="confirm-detail-val">${new Date(data.preferred_date+'T00:00').toLocaleDateString('en-PH',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}</span>
+        </div>
+        <div class="confirm-detail-row">
+            <span class="confirm-detail-key">Time</span>
+            <span class="confirm-detail-val">${timeLabels[data.preferred_time] || 'Flexible'}</span>
+        </div>
+        <div class="confirm-detail-row">
+            <span class="confirm-detail-key">Payment</span>
+            <span class="confirm-detail-val">${payLabels[data.payment_method] || data.payment_method}</span>
+        </div>
+        <div class="confirm-detail-row">
+            <span class="confirm-detail-key">Total</span>
+            <span class="confirm-detail-val" style="font-weight:800;color:var(--dark-green)">₱${data.total_amount.toLocaleString()}</span>
+        </div>
+    `
+
+    // ── Generate QR Code ──────────────────────────────────
+    const qrContainer = document.getElementById('qr-canvas')
+    qrContainer.innerHTML = '' // clear any previous QR
+
+    // Build a rich payload: tracking URL with order number embedded
+    const trackingBase = window.location.origin + window.location.pathname
+    const qrPayload = `${trackingBase}?track=${encodeURIComponent(orderNum)}`
+
+    new QRCode(qrContainer, {
+        text: qrPayload,
+        width: 200,
+        height: 200,
+        colorDark: '#1a1a18',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.H
+    })
+
+    // Auto-open tracker if page loaded with ?track= param
+    window._lastQrPayload = qrPayload
+    window._lastOrderNum  = orderNum
+}
+
+// ─── QR DOWNLOAD ─────────────────────────────────────────
+function downloadQR() {
+    const canvas = document.querySelector('#qr-canvas canvas')
+    if (!canvas) return
+    const link = document.createElement('a')
+    link.download = `ElLetsoneros-${window._lastOrderNum || 'order'}.png`
+    link.href = canvas.toDataURL('image/png')
+    link.click()
+}
+
+// ─── AUTO-TRACK FROM URL PARAM (?track=ELL-XXXXXX) ───────
+;(function autoTrackFromUrl() {
+    const params = new URLSearchParams(window.location.search)
+    const trackNum = params.get('track')
+    if (!trackNum) return
+    // Open tracker panel and pre-fill
+    const body  = document.getElementById('tracker-body')
+    const chev  = document.getElementById('tracker-chevron')
+    const input = document.getElementById('tracker-input')
+    if (body && input) {
+        body.classList.add('open')
+        if (chev) { chev.classList.add('bx-chevron-up'); chev.classList.remove('bx-chevron-down') }
+        input.value = trackNum.toUpperCase()
+        // Scroll to tracker after a tick
+        setTimeout(() => {
+            document.querySelector('.tracker-section')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+            trackOrder()
+        }, 400)
+    }
+})()
+
+function startNewOrder() {
+    cart = []
+    renderCart()
+    // reset form
+    ;['f-name','f-phone','f-email','f-address','f-notes'].forEach(id => { document.getElementById(id).value = '' })
+    document.getElementById('f-type').value = ''
+    document.getElementById('f-date').value = ''
+    document.getElementById('f-time').value = ''
+    document.querySelectorAll('input[name=payment]').forEach(r => r.checked = false)
+    document.querySelectorAll('.pay-opt').forEach(el => el.classList.remove('selected'))
+    document.getElementById('delivery-fields').style.display = 'none'
+    document.getElementById('page-confirm').classList.remove('visible')
+    document.getElementById('page-menu').style.display = 'flex'
+    setStep(1)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+// ─── ORDER TRACKER ────────────────────────────────────────
+function toggleTracker() {
+    const body = document.getElementById('tracker-body')
+    const chev = document.getElementById('tracker-chevron')
+    body.classList.toggle('open')
+    chev.classList.toggle('bx-chevron-up')
+    chev.classList.toggle('bx-chevron-down')
+}
+
+async function trackOrder() {
+    const num = document.getElementById('tracker-input').value.trim().toUpperCase()
+    const res = document.getElementById('tracker-result')
+    if (!num) { res.innerHTML = '<span style="color:var(--red);font-size:0.85rem;">Please enter an order number.</span>'; return }
+
+    res.innerHTML = '<span style="color:#aaa;font-size:0.85rem;"><i class="bx bx-loader-alt bx-spin"></i> Looking up order…</span>'
+
+    try {
+        const { data, error } = await db.from('orders').select('*').eq('order_number', num).single()
+        if (error || !data) {
+            res.innerHTML = `<span style="color:var(--red);font-size:0.85rem;">❌ Order <strong>${num}</strong> not found. Double-check your order number.</span>`
+            return
+        }
+
+        const statusClass = `status-${data.status}`
+        const items = JSON.parse(data.items || '[]')
+        const itemsHtml = items.map(i => `
+            <div class="track-item">
+                <span>${i.name}</span>
+                <span>₱${(i.subtotal||i.price).toLocaleString()}</span>
+            </div>
+        `).join('')
+
+        res.innerHTML = `
+            <div class="track-card">
+                <div class="track-card-head">
+                    <span class="track-order-num">${data.order_number}</span>
+                    <span class="track-status-badge ${statusClass}">${data.status.toUpperCase()}</span>
+                </div>
+                <div class="track-card-body">
+                    <div class="track-info-row"><span class="track-info-key">Customer</span><span class="track-info-val">${data.customer_name}</span></div>
+                    <div class="track-info-row"><span class="track-info-key">Date</span><span class="track-info-val">${data.preferred_date}</span></div>
+                    <div class="track-info-row"><span class="track-info-key">Type</span><span class="track-info-val">${data.order_type === 'delivery' ? '🏠 Delivery' : '📦 Pickup'}</span></div>
+                    <div class="track-info-row"><span class="track-info-key">Payment</span><span class="track-info-val">${data.payment_method}</span></div>
+                    <div class="track-items-list">
+                        ${itemsHtml}
+                        <div class="track-total-row">
+                            <span>Total</span>
+                            <span>₱${Number(data.total_amount).toLocaleString()}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `
+    } catch(e) {
+        res.innerHTML = `<span style="color:var(--red);font-size:0.85rem;">Could not connect. Please try again.</span>`
+    }
+}
+
+// ─── TOAST ───────────────────────────────────────────────
+let toastTimer
+function showToast(msg, type='success') {
+    const t = document.getElementById('order-toast')
+    t.innerHTML = `<i class="bx ${type==='success'?'bx-check-circle':'bx-x-circle'}"></i> ${msg}`
+    t.className = `order-toast ${type}`
+    clearTimeout(toastTimer)
+    toastTimer = setTimeout(() => t.classList.add('hide'), 3000)
+}
+</script>
+</body>
+</html>
