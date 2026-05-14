@@ -1708,29 +1708,14 @@ function openModal(id) {
     const ssWrap = document.getElementById('modal-screenshot-wrap')
     if (order.payment_screenshot) {
         ssSection.style.display = 'block'
-        const isBase64 = order.payment_screenshot.startsWith('data:image')
-        const isUrl    = order.payment_screenshot.startsWith('http')
-        if (isBase64 || isUrl) {
-            ssWrap.innerHTML = `
-                <div style="margin-bottom:0.5rem;">
-                    <img src="${order.payment_screenshot}" alt="Payment screenshot"
-                        style="max-width:100%;max-height:400px;border:2px solid var(--dark);border-radius:10px;box-shadow:3px 3px 0 var(--dark);cursor:pointer;display:block;"
-                        onerror="this.style.display='none';document.getElementById('ss-error-${order.id.slice(0,8)}').style.display='block'"
-                        onclick="this.style.maxHeight=this.style.maxHeight==='none'?'400px':'none'" title="Click to expand/collapse" />
-                    <div id="ss-error-${order.id.slice(0,8)}" style="display:none;background:#fff3cd;border:1.5px solid #f0ad4e;border-radius:8px;padding:0.75rem;font-size:0.83rem;color:#856404;">
-                        ⚠️ Image failed to load. The Supabase Storage bucket may not be set to <strong>Public</strong>.
-                        <br><a href="${order.payment_screenshot}" target="_blank" rel="noopener"
-                            style="color:#0d6efd;font-weight:700;">Open file directly ↗</a>
-                    </div>
-                    ${isUrl ? `<a href="${order.payment_screenshot}" target="_blank" rel="noopener"
-                        style="display:inline-flex;align-items:center;gap:0.3rem;margin-top:0.4rem;font-size:0.75rem;color:var(--dark-green);font-weight:700;text-decoration:underline;">
-                        <i class="bx bx-link-external"></i> Open in new tab</a>` : ''}
-                    <div style="font-size:0.72rem;color:#aaa;margin-top:0.25rem;font-style:italic;">Click image to expand/collapse</div>
-                </div>
-            `
-        } else {
-            ssWrap.innerHTML = `<div style="color:#aaa;font-size:0.85rem;">⚠️ Unrecognized screenshot format.</div>`
-        }
+        ssWrap.innerHTML = `
+            <div style="margin-bottom:0.5rem;">
+                <img src="${order.payment_screenshot}" alt="Payment screenshot"
+                    style="max-width:100%;max-height:400px;border:2px solid var(--dark);border-radius:10px;box-shadow:3px 3px 0 var(--dark);cursor:pointer;"
+                    onclick="this.style.maxHeight=this.style.maxHeight==='none'?'400px':'none'" title="Click to expand" />
+                <div style="font-size:0.72rem;color:#aaa;margin-top:0.35rem;font-style:italic;">Click image to expand/collapse</div>
+            </div>
+        `
     } else if (order.payment_method !== 'cod') {
         ssSection.style.display = 'block'
         ssWrap.innerHTML = `<div style="color:#aaa;font-family:'Syne',sans-serif;font-size:0.85rem;font-style:italic;">⚠️ No screenshot uploaded by customer.</div>`
@@ -1768,8 +1753,6 @@ async function executeDeleteOrder() {
     showToast('Order deleted.', 'ok')
     closeModal()
     allOrders = allOrders.filter(o => o.id !== deletedId)
-    updateCounts()
-    updateStats()
     renderTable()
 }
 

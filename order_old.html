@@ -1301,7 +1301,7 @@ body {
                         </div>
                         <div class="form-field">
                             <label>Payment Screenshot <span class="required-star">*</span></label>
-                            <input type="file" id="f-gcash-screenshot" accept="image/*" onchange="checkFileSize(this)" style="border:2px dashed #c5c5b0;border-radius:8px;background:var(--cream);padding:0.55rem 0.9rem;font-family:'Syne',sans-serif;font-size:0.88rem;cursor:pointer;" />
+                            <input type="file" id="f-gcash-screenshot" accept="image/*" style="border:2px dashed #c5c5b0;border-radius:8px;background:var(--cream);padding:0.55rem 0.9rem;font-family:'Syne',sans-serif;font-size:0.88rem;cursor:pointer;" />
                             <span class="form-hint">Upload a clear screenshot of your GCash transaction</span>
                         </div>
                     </div>
@@ -1336,7 +1336,7 @@ body {
                     <!-- GCash QR -->
                     <div style="display:flex;gap:1.5rem;align-items:flex-start;flex-wrap:wrap;margin-bottom:0.85rem;">
                         <div style="text-align:center;">
-                            <img src="pictures/gcash_qr.jpg" alt="GCash QR Code" style="width:180px;height:auto;object-fit:contain;border:3px solid var(--dark);border-radius:10px;box-shadow:4px 4px 0 var(--dark);background:white;padding:4px;">
+                            <img src="pictures/gcash_qr.jpg" alt="GCash QR Code" style="width:350px;height:auto;object-fit:contain;border:3px solid var(--dark);border-radius:10px;box-shadow:4px 4px 0 var(--dark);background:white;padding:4px;">
                             <div style="font-family:'Syne',sans-serif;font-size:0.72rem;color:#aaa;margin-top:0.4rem;">Scan QR to pay</div>
                         </div>
                         <div style="flex:1;font-family:'Syne',sans-serif;min-width:140px;">
@@ -1363,7 +1363,7 @@ body {
                             </div>
                             <div class="form-field">
                                 <label>Payment Screenshot <span class="required-star">*</span></label>
-                                <input type="file" id="f-cod-screenshot" accept="image/*" onchange="checkFileSize(this)" style="border:2px dashed #c5c5b0;border-radius:8px;background:var(--cream);padding:0.55rem 0.9rem;font-family:'Syne',sans-serif;font-size:0.88rem;cursor:pointer;" />
+                                <input type="file" id="f-cod-screenshot" accept="image/*" style="border:2px dashed #c5c5b0;border-radius:8px;background:var(--cream);padding:0.55rem 0.9rem;font-family:'Syne',sans-serif;font-size:0.88rem;cursor:pointer;" />
                             </div>
                             <div style="font-family:'Syne',sans-serif;font-size:0.78rem;color:#888;font-style:italic;">Please provide at least a reference number or a screenshot.</div>
                         </div>
@@ -1422,7 +1422,7 @@ body {
                         </div>
                         <div class="form-field">
                             <label>Payment Screenshot <span class="required-star">*</span></label>
-                            <input type="file" id="f-bank-screenshot" accept="image/*" onchange="checkFileSize(this)" style="border:2px dashed #c5c5b0;border-radius:8px;background:var(--cream);padding:0.55rem 0.9rem;font-family:'Syne',sans-serif;font-size:0.88rem;cursor:pointer;" />
+                            <input type="file" id="f-bank-screenshot" accept="image/*" style="border:2px dashed #c5c5b0;border-radius:8px;background:var(--cream);padding:0.55rem 0.9rem;font-family:'Syne',sans-serif;font-size:0.88rem;cursor:pointer;" />
                             <span class="form-hint">Upload a screenshot of your bank/GCash transfer confirmation</span>
                         </div>
                     </div>
@@ -1947,40 +1947,14 @@ function genOrderNum() {
 }
 
 // ─── PLACE ORDER ─────────────────────────────────────────
-const MAX_SCREENSHOT_MB = 5
-
-function checkFileSize(input) {
-    const file = input.files[0]
-    if (!file) return
-    const err = validateScreenshotFile(file)
-    if (err) {
-        showToast(err, 'error')
-        input.value = ''
-        try { input.type = 'text'; input.type = 'file' } catch(e) {}
-    } else {
-        showToast(`✅ ${(file.size/1024/1024).toFixed(1)}MB — looks good!`, 'success')
-    }
-}
-const SCREENSHOT_BUCKET  = 'order-screenshots'
-
-function validateScreenshotFile(file) {
-    if (!file) return null
-    if (!file.type.startsWith('image/')) return 'Screenshot must be an image file.'
-    if (file.size > MAX_SCREENSHOT_MB * 1024 * 1024) return `Screenshot must be under ${MAX_SCREENSHOT_MB}MB (yours is ${(file.size/1024/1024).toFixed(1)}MB).`
-    return null
-}
-
-async function uploadScreenshot(file, orderNum) {
-    if (!file) return null
-    const ext  = file.name.split('.').pop() || 'jpg'
-    const date = new Date().toISOString().split('T')[0]
-    const path = `${date}/${orderNum}/${Date.now()}.${ext}`
-    const { data, error } = await db.storage
-        .from(SCREENSHOT_BUCKET)
-        .upload(path, file, { cacheControl: '3600', upsert: false })
-    if (error) { console.warn('Storage upload error:', error.message); return null }
-    const { data: urlData } = db.storage.from(SCREENSHOT_BUCKET).getPublicUrl(path)
-    return urlData?.publicUrl || null
+async function fileToBase64(file) {
+    return new Promise((resolve) => {
+        if (!file) { resolve(null); return }
+        const reader = new FileReader()
+        reader.onload = e => resolve(e.target.result)
+        reader.onerror = () => resolve(null)
+        reader.readAsDataURL(file)
+    })
 }
 
 async function placeOrder() {
@@ -2048,34 +2022,22 @@ async function placeOrder() {
     const orderNum   = genOrderNum()
     const grandTotal = cart.reduce((s,i) => s + i.subtotal, 0)
 
-    // Validate & upload screenshot to Supabase Storage
+    // Convert screenshot to base64 for storage
+    let screenshotB64 = null
     let payRef = null
-    let screenshotFile = null
     if (payment === 'gcash') {
         payRef = document.getElementById('f-gcash-ref').value.trim() || null
-        screenshotFile = document.getElementById('f-gcash-screenshot').files[0] || null
+        const f = document.getElementById('f-gcash-screenshot').files[0]
+        screenshotB64 = await fileToBase64(f)
     } else if (payment === 'bank') {
         payRef = document.getElementById('f-bank-ref').value.trim() || null
-        screenshotFile = document.getElementById('f-bank-screenshot').files[0] || null
+        const f = document.getElementById('f-bank-screenshot').files[0]
+        screenshotB64 = await fileToBase64(f)
     } else if (payment === 'cod') {
         payRef = document.getElementById('f-cod-ref').value.trim() || null
-        screenshotFile = document.getElementById('f-cod-screenshot').files[0] || null
+        const f = document.getElementById('f-cod-screenshot').files[0]
+        screenshotB64 = await fileToBase64(f)
     }
-
-    // File size / type check before doing anything
-    const fileErr = validateScreenshotFile(screenshotFile)
-    if (fileErr) {
-        errEl.textContent = fileErr
-        errEl.style.display = 'block'
-        btn.disabled = false
-        btn.innerHTML = '<i class="bx bx-check-circle"></i> Place Order'
-        return
-    }
-
-    btn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Uploading screenshot…'
-    const screenshotUrl = await uploadScreenshot(screenshotFile, orderNum)
-
-    btn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Placing Order…'
 
     const orderData = {
         order_number:    orderNum,
@@ -2089,7 +2051,7 @@ async function placeOrder() {
         payment_method:  payment,
         cod_mode:        payment === 'cod' ? codMode : null,
         payment_reference: payRef,
-        payment_screenshot: screenshotUrl,
+        payment_screenshot: screenshotB64,
         notes:           notes || null,
         items:           JSON.stringify(cart),
         total_amount:    grandTotal,
@@ -2101,7 +2063,7 @@ async function placeOrder() {
         const { error } = await db.from('orders').insert([orderData])
         if (error) {
             console.warn('Supabase insert error:', error.message)
-            // Try without screenshot URL in case column doesn't exist yet
+            // Try without screenshot in case column doesn't exist yet
             const fallback = { ...orderData }
             delete fallback.payment_screenshot
             const { error: e2 } = await db.from('orders').insert([fallback])
