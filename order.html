@@ -841,6 +841,7 @@ body {
 }
 .tracker-input {
     flex: 1;
+    min-width: 0;
     height: 42px;
     border: 2px solid #c5c5b0;
     border-radius: 8px;
@@ -883,12 +884,19 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
 }
 .track-order-num {
     font-family: 'Syne', sans-serif;
     font-weight: 800;
     color: var(--sun);
-    font-size: 1rem;
+    font-size: clamp(0.65rem, 2.5vw, 0.95rem);
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    min-width: 0;
+    flex: 1;
+    line-height: 1.2;
 }
 .track-status-badge {
     padding: 0.25rem 0.75rem;
@@ -898,6 +906,8 @@ body {
     font-size: 0.72rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
+    flex-shrink: 0;
+    align-self: flex-start;
 }
 .status-pending   { background: #fff3cd; color: #856404; }
 .status-confirmed { background: #d1ecf1; color: #0c5460; }
@@ -1138,9 +1148,28 @@ body {
                 <div class="tracker-body" id="tracker-body">
                     <div class="tracker-search-row">
                         <input type="text" class="tracker-input" id="tracker-input" placeholder="e.g. ELL-240001" />
-                        <button class="tracker-btn" onclick="trackOrder()"><i class="bx bx-search"></i> Track</button>
+                        <button class="tracker-btn" onclick="openQrScanner()" title="Scan QR Code" style="padding:0.55rem 0.85rem;background:var(--sand);color:var(--dark);border-color:var(--dark);flex-shrink:0;"><i class="bx bx-qr-scan" style="font-size:1.1rem;"></i></button>
+                        <button class="tracker-btn" onclick="trackOrder()" style="flex-shrink:0;"><i class="bx bx-search"></i> Track</button>
                     </div>
                     <div class="tracker-result" id="tracker-result"></div>
+
+                    <!-- QR SCANNER MODAL -->
+                    <div id="qr-scanner-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:none;align-items:center;justify-content:center;">
+                        <div style="background:var(--dark);border-radius:16px;padding:1.25rem;width:min(360px,92vw);box-shadow:0 8px 40px rgba(0,0,0,0.6);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.85rem;">
+                                <span style="font-family:'Syne',sans-serif;font-weight:800;color:var(--sun);font-size:0.95rem;"><i class="bx bx-qr-scan"></i> Scan Order QR</span>
+                                <button onclick="closeQrScanner()" style="background:none;border:none;color:#aaa;font-size:1.4rem;cursor:pointer;line-height:1;">&times;</button>
+                            </div>
+                            <div style="position:relative;border-radius:10px;overflow:hidden;background:#000;aspect-ratio:1/1;">
+                                <video id="qr-video" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover;display:block;"></video>
+                                <!-- Crosshair overlay -->
+                                <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;">
+                                    <div style="width:60%;height:60%;border:3px solid var(--sun);border-radius:8px;box-shadow:0 0 0 9999px rgba(0,0,0,0.35);"></div>
+                                </div>
+                            </div>
+                            <div id="qr-scan-status" style="font-family:'Syne',sans-serif;font-size:0.78rem;color:#aaa;text-align:center;margin-top:0.65rem;">Point your camera at the QR code</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -2232,6 +2261,71 @@ async function trackOrder() {
     } catch(e) {
         res.innerHTML = `<span style="color:var(--red);font-size:0.85rem;">Could not connect. Please try again.</span>`
     }
+}
+
+// ─── QR SCANNER ──────────────────────────────────────────
+let qrStream = null
+let qrAnimFrame = null
+
+async function openQrScanner() {
+    const modal = document.getElementById('qr-scanner-modal')
+    const video = document.getElementById('qr-video')
+    const status = document.getElementById('qr-scan-status')
+    modal.style.display = 'flex'
+    status.textContent = 'Starting camera…'
+    try {
+        qrStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+        video.srcObject = qrStream
+        await video.play()
+        status.textContent = 'Point your camera at the QR code'
+        startQrDetection(video, status)
+    } catch(e) {
+        status.style.color = 'var(--red)'
+        status.textContent = 'Camera access denied or unavailable.'
+    }
+}
+
+function closeQrScanner() {
+    const modal = document.getElementById('qr-scanner-modal')
+    modal.style.display = 'none'
+    if (qrStream) { qrStream.getTracks().forEach(t => t.stop()); qrStream = null }
+    if (qrAnimFrame) { cancelAnimationFrame(qrAnimFrame); qrAnimFrame = null }
+}
+
+function startQrDetection(video, status) {
+    if (!('BarcodeDetector' in window)) {
+        status.style.color = '#ffc107'
+        status.textContent = 'Auto-scan not supported on this browser — try Chrome on Android.'
+        return
+    }
+    const detector = new BarcodeDetector({ formats: ['qr_code'] })
+    async function detect() {
+        if (!qrStream) return
+        try {
+            const codes = await detector.detect(video)
+            if (codes.length > 0) {
+                const raw = codes[0].rawValue
+                // Extract order number — look for ELL-XXXXXX pattern or use full value
+                const match = raw.match(/ELL-[A-Z0-9]+/)
+                const orderNum = match ? match[0] : raw.trim().toUpperCase()
+                document.getElementById('tracker-input').value = orderNum
+                closeQrScanner()
+                // Open tracker and search
+                const body = document.getElementById('tracker-body')
+                const chev = document.getElementById('tracker-chevron')
+                if (!body.classList.contains('open')) {
+                    body.classList.add('open')
+                    chev.classList.add('bx-chevron-up')
+                    chev.classList.remove('bx-chevron-down')
+                }
+                trackOrder()
+                showToast('QR scanned: ' + orderNum, 'success')
+                return
+            }
+        } catch(e) {}
+        qrAnimFrame = requestAnimationFrame(detect)
+    }
+    detect()
 }
 
 // ─── TOAST ───────────────────────────────────────────────
