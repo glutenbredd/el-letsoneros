@@ -1219,6 +1219,7 @@ body {
                 <label class="pay-opt" id="pay-cod">
                     <input type="radio" name="payment" value="cod" onchange="selectPayment('pay-cod')">
                     <i class="bx bx-money"></i> Cash on Delivery / Pickup
+                    <span style="font-size:0.7rem;font-weight:600;color:var(--red);margin-top:0.2rem;line-height:1.3;text-align:center;">⚠️ Downpayment required<br>(pay to shop or via GCash/PNB)</span>
                 </label>
                 <label class="pay-opt" id="pay-gcash">
                     <input type="radio" name="payment" value="gcash" onchange="selectPayment('pay-gcash')">
@@ -1228,6 +1229,158 @@ body {
                     <input type="radio" name="payment" value="bank" onchange="selectPayment('pay-bank')">
                     <i class="bx bx-credit-card"></i> Bank Transfer
                 </label>
+            </div>
+
+            <!-- GCASH DETAILS -->
+            <div id="gcash-details" style="display:none;margin-top:1.25rem;background:#f0faf2;border:2px solid var(--dark-green);border-radius:12px;padding:1.25rem;">
+                <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:0.95rem;color:var(--dark-green);margin-bottom:0.75rem;display:flex;align-items:center;gap:0.4rem;">
+                    <i class="bx bx-mobile-alt"></i> GCash Payment Details
+                </div>
+                <div style="display:flex;gap:1.5rem;align-items:flex-start;flex-wrap:wrap;">
+                    <div style="text-align:center;">
+                        <img src="pictures/gcash_qr.jpg" alt="GCash QR Code" style="width:350px;height:600px;object-fit:contain;border:3px solid var(--dark);border-radius:10px;box-shadow:4px 4px 0 var(--dark);background:white;padding:4px;" onerror="this.style.display='none';document.getElementById('gcash-qr-fallback').style.display='block'">
+                        <div style="font-family:'Syne',sans-serif;font-size:0.72rem;color:#aaa;margin-top:0.4rem;">Scan QR to pay</div>
+                    </div>
+                    <div style="flex:1;font-family:'Syne',sans-serif;">
+                        <div style="font-size:0.75rem;color:#aaa;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.25rem;">GCash Number</div>
+                        <div style="font-size:1.4rem;font-weight:800;color:var(--dark);letter-spacing:0.05em;margin-bottom:0.75rem;">0960 615 6102</div>
+                        <div style="font-size:0.75rem;color:#aaa;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.25rem;">Account Name</div>
+                        <div style="font-size:0.95rem;font-weight:700;color:var(--dark);margin-bottom:0.75rem;">HE**N A.</div>
+                        <div style="background:#fff3cd;border:1.5px solid #ffc107;border-radius:8px;padding:0.6rem 0.8rem;font-size:0.8rem;color:#856404;font-weight:600;">
+                            ⚠️ Send the exact order total. Screenshot or save the reference number!
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-top:1.25rem;border-top:2px dashed #c8e6c9;padding-top:1.1rem;">
+                    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:0.85rem;color:var(--red);margin-bottom:0.75rem;">
+                        <i class="bx bx-upload"></i> Upload Payment Screenshot / Reference Number <span style="color:var(--red);">*</span>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:0.75rem;">
+                        <div class="form-field">
+                            <label>GCash Reference Number <span class="required-star">*</span></label>
+                            <input type="text" id="f-gcash-ref" placeholder="e.g. 1234 56789 1234" style="font-family:'Syne',sans-serif;" />
+                            <span class="form-hint">Found in your GCash transaction history</span>
+                        </div>
+                        <div class="form-field">
+                            <label>Payment Screenshot <span class="required-star">*</span></label>
+                            <input type="file" id="f-gcash-screenshot" accept="image/*" style="border:2px dashed #c5c5b0;border-radius:8px;background:var(--cream);padding:0.55rem 0.9rem;font-family:'Syne',sans-serif;font-size:0.88rem;cursor:pointer;" />
+                            <span class="form-hint">Upload a clear screenshot of your GCash transaction</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- COD DOWNPAYMENT NOTICE -->
+            <div id="cod-details" style="display:none;margin-top:1.25rem;background:#fff8e1;border:2px solid #ffc107;border-radius:12px;padding:1.25rem;">
+                <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:0.95rem;color:#e65100;margin-bottom:0.75rem;display:flex;align-items:center;gap:0.4rem;">
+                    <i class="bx bx-info-circle"></i> Downpayment Required
+                </div>
+                <p style="font-family:'Syne',sans-serif;font-size:0.88rem;color:#5d4037;line-height:1.6;margin-bottom:0.9rem;">
+                    A minimum <strong>₱2,000 downpayment</strong> is required to confirm your order. How will you pay it?
+                </p>
+                <!-- COD sub-option toggle buttons -->
+                <div style="display:flex;gap:0.6rem;margin-bottom:1rem;">
+                    <button type="button" id="cod-shop-btn" onclick="selectCodMode('shop')"
+                        style="flex:1;font-family:'Syne',sans-serif;font-weight:700;font-size:0.85rem;padding:0.75rem 0.5rem;border:2px solid #e0c040;border-radius:10px;background:white;color:#5d4037;cursor:pointer;transition:all 0.15s;display:flex;flex-direction:column;align-items:center;gap:0.3rem;box-shadow:none;">
+                        🏪<span>Pay at Shop</span>
+                    </button>
+                    <button type="button" id="cod-online-btn" onclick="selectCodMode('online')"
+                        style="flex:1;font-family:'Syne',sans-serif;font-weight:700;font-size:0.85rem;padding:0.75rem 0.5rem;border:2px solid #e0c040;border-radius:10px;background:white;color:#5d4037;cursor:pointer;transition:all 0.15s;display:flex;flex-direction:column;align-items:center;gap:0.3rem;box-shadow:none;">
+                        📱<span>Online Payment</span>
+                    </button>
+                </div>
+                <!-- Pay at Shop panel -->
+                <div id="cod-shop-panel" style="display:none;background:white;border:1.5px solid #ffe082;border-radius:8px;padding:0.85rem 1rem;font-family:'Syne',sans-serif;font-size:0.88rem;color:#5d4037;line-height:1.6;">
+                    🏪 Visit our shop in <strong>Baclayon, Bohol</strong> to pay the ₱2,000 minimum downpayment in person before your order is confirmed.
+                </div>
+                <!-- Online Payment panel -->
+                <div id="cod-online-panel" style="display:none;">
+                    <div style="display:flex;flex-direction:column;gap:0.6rem;font-family:'Syne',sans-serif;font-size:0.85rem;margin-bottom:0.85rem;">
+                        <div style="background:white;border:1.5px solid #ffe082;border-radius:8px;padding:0.7rem 1rem;">
+                            📱 <strong>GCash:</strong> 0960 615 6102 (HE**N A.)
+                        </div>
+                        <div style="background:white;border:1.5px solid #ffe082;border-radius:8px;padding:0.7rem 1rem;">
+                            🏦 <strong>PNB Bank Transfer:</strong> 3059-1008-1917
+                        </div>
+                        <div style="background:#fff3cd;border:1.5px solid #ffc107;border-radius:8px;padding:0.6rem 0.8rem;font-size:0.8rem;color:#856404;font-weight:600;">
+                            ⚠️ Send at least ₱2,000 as downpayment. Keep your receipt!
+                        </div>
+                    </div>
+                    <div style="border-top:2px dashed #ffe082;padding-top:0.85rem;">
+                        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:0.82rem;color:#e65100;margin-bottom:0.6rem;">
+                            <i class="bx bx-upload"></i> Upload Proof of Payment <span style="color:var(--red);">*</span>
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:0.75rem;">
+                            <div class="form-field">
+                                <label>Reference Number <span class="required-star">*</span></label>
+                                <input type="text" id="f-cod-ref" placeholder="GCash or bank reference number" style="font-family:'Syne',sans-serif;" />
+                            </div>
+                            <div class="form-field">
+                                <label>Payment Screenshot <span class="required-star">*</span></label>
+                                <input type="file" id="f-cod-screenshot" accept="image/*" style="border:2px dashed #c5c5b0;border-radius:8px;background:var(--cream);padding:0.55rem 0.9rem;font-family:'Syne',sans-serif;font-size:0.88rem;cursor:pointer;" />
+                            </div>
+                            <div style="font-family:'Syne',sans-serif;font-size:0.78rem;color:#888;font-style:italic;">Please provide at least a reference number or a screenshot.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="bank-details" style="display:none;margin-top:1.25rem;background:#f0faf2;border:2px solid var(--dark-green);border-radius:12px;padding:1.25rem;">
+                <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:0.95rem;color:var(--dark-green);margin-bottom:0.75rem;display:flex;align-items:center;gap:0.4rem;">
+                    <i class="bx bx-credit-card"></i> Bank Transfer Details
+                </div>
+
+                <!-- PNB Account -->
+                <div style="background:white;border:2px solid var(--dark);border-radius:10px;padding:1rem;margin-bottom:0.85rem;box-shadow:3px 3px 0 var(--dark);">
+                    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:0.85rem;color:var(--dark);margin-bottom:0.5rem;">🏦 PNB (Philippine National Bank)</div>
+                    <div style="display:flex;gap:2rem;flex-wrap:wrap;font-family:'Syne',sans-serif;">
+                        <div>
+                            <div style="font-size:0.7rem;color:#aaa;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">Account Number</div>
+                            <div style="font-size:1.1rem;font-weight:800;color:var(--dark);letter-spacing:0.05em;">3059-1008-1917</div>
+                        </div>
+                        <div>
+                            <div style="font-size:0.7rem;color:#aaa;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">Account Name</div>
+                            <div style="font-size:0.95rem;font-weight:700;color:var(--dark);">El Letsonero's</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GCash also accepted -->
+                <div style="background:white;border:2px solid var(--dark);border-radius:10px;padding:1rem;margin-bottom:0.85rem;box-shadow:3px 3px 0 var(--dark);">
+                    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:0.85rem;color:var(--dark);margin-bottom:0.75rem;">📱 Or pay via GCash</div>
+                    <div style="display:flex;gap:1.25rem;align-items:flex-start;flex-wrap:wrap;">
+                        <div style="text-align:center;">
+                            <img src="pictures/gcash_qr.jpg" alt="GCash QR Code" style="width:350px;height:600px;object-fit:contain;border:2px solid var(--dark);border-radius:8px;background:white;padding:3px;" onerror="this.style.display='none'">
+                            <div style="font-family:'Syne',sans-serif;font-size:0.7rem;color:#aaa;margin-top:0.35rem;">Scan to pay</div>
+                        </div>
+                        <div style="font-family:'Syne',sans-serif;">
+                            <div style="font-size:0.7rem;color:#aaa;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.2rem;">GCash Number</div>
+                            <div style="font-size:1.25rem;font-weight:800;color:var(--dark);letter-spacing:0.05em;margin-bottom:0.5rem;">0960 615 6102</div>
+                            <div style="font-size:0.7rem;color:#aaa;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.2rem;">Account Name</div>
+                            <div style="font-size:0.9rem;font-weight:700;color:var(--dark);">HE**N A.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background:#fff3cd;border:1.5px solid #ffc107;border-radius:8px;padding:0.6rem 0.8rem;font-family:'Syne',sans-serif;font-size:0.8rem;color:#856404;font-weight:600;margin-bottom:1rem;">
+                    ⚠️ Send the exact order total. Keep your transaction receipt!
+                </div>
+
+                <div style="border-top:2px dashed #c8e6c9;padding-top:1.1rem;">
+                    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:0.85rem;color:var(--red);margin-bottom:0.75rem;">
+                        <i class="bx bx-upload"></i> Upload Payment Proof / Reference Number <span style="color:var(--red);">*</span>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:0.75rem;">
+                        <div class="form-field">
+                            <label>Reference / Transaction Number <span class="required-star">*</span></label>
+                            <input type="text" id="f-bank-ref" placeholder="" style="font-family:'Syne',sans-serif;" />
+                        </div>
+                        <div class="form-field">
+                            <label>Payment Screenshot <span class="required-star">*</span></label>
+                            <input type="file" id="f-bank-screenshot" accept="image/*" style="border:2px dashed #c5c5b0;border-radius:8px;background:var(--cream);padding:0.55rem 0.9rem;font-family:'Syne',sans-serif;font-size:0.88rem;cursor:pointer;" />
+                            <span class="form-hint">Upload a screenshot of your bank/GCash transfer confirmation</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -1348,11 +1501,35 @@ async function loadMenu() {
 
 function getDefaultMenu() {
     return [
-        { id: 'sm-1', category: '🐷 Whole Lechon', name: 'Whole Lechon — Small', description: 'Perfect for 20–30 guests. Crispy skin, tender meat.', price: 3500, unit: 'piece', pricing_type: 'fixed', sort_order: 1, is_available: true },
-        { id: 'sm-2', category: '🐷 Whole Lechon', name: 'Whole Lechon — Large', description: 'Serves 40–60 guests. The centerpiece of any fiesta.', price: 5500, unit: 'piece', pricing_type: 'fixed', sort_order: 2, is_available: true },
-        { id: 'sm-3', category: '🔪 Chopped Per Kilo', name: 'Lechon — Chopped Per Kilo', description: 'Freshly chopped lechon. Minimum 1 kg. Enter desired weight.', price: 420, unit: 'kilo', pricing_type: 'per_kilo', sort_order: 3, is_available: true },
-        { id: 'sm-4', category: '🥩 Lechon Belly', name: 'Lechon Belly Roll', description: 'Stuffed & roasted belly roll. Juicy inside, crackling outside.', price: 1800, unit: 'roll', pricing_type: 'fixed', sort_order: 4, is_available: true },
-        { id: 'sm-5', category: '🐔 Native Chicken', name: 'Native Chicken (Manok)', description: 'Free-range native chicken, roasted to perfection.', price: 450, unit: 'piece', pricing_type: 'fixed', sort_order: 5, is_available: true },
+        // Whole Lechon — all weight brackets from the menu
+        { id: 'wl-1',  category: '🐷 Whole Lechon', name: 'Whole Lechon 15–16 kls',  description: 'Crispy skin, tender Bohol-style lechon. Comes with FREE Dinuguan & FREE Inatayan! Pre-order 1 day advance.', price: 7500,  unit: 'piece', pricing_type: 'whole_lechon', sort_order: 1,  is_available: true },
+        { id: 'wl-2',  category: '🐷 Whole Lechon', name: 'Whole Lechon 17–18 kls',  description: 'Crispy skin, tender Bohol-style lechon. Comes with FREE Dinuguan & FREE Inatayan! Pre-order 1 day advance.', price: 8000,  unit: 'piece', pricing_type: 'whole_lechon', sort_order: 2,  is_available: true },
+        { id: 'wl-3',  category: '🐷 Whole Lechon', name: 'Whole Lechon 19–20 kls',  description: 'Crispy skin, tender Bohol-style lechon. Comes with FREE Dinuguan & FREE Inatayan! Pre-order 1 day advance.', price: 8500,  unit: 'piece', pricing_type: 'whole_lechon', sort_order: 3,  is_available: true },
+        { id: 'wl-4',  category: '🐷 Whole Lechon', name: 'Whole Lechon 21–22 kls',  description: 'Crispy skin, tender Bohol-style lechon. Comes with FREE Dinuguan & FREE Inatayan! Pre-order 1 day advance.', price: 9000,  unit: 'piece', pricing_type: 'whole_lechon', sort_order: 4,  is_available: true },
+        { id: 'wl-5',  category: '🐷 Whole Lechon', name: 'Whole Lechon 23–24 kls',  description: 'Crispy skin, tender Bohol-style lechon. Comes with FREE Dinuguan & FREE Inatayan! Pre-order 1 day advance.', price: 9500,  unit: 'piece', pricing_type: 'whole_lechon', sort_order: 5,  is_available: true },
+        { id: 'wl-6',  category: '🐷 Whole Lechon', name: 'Whole Lechon 25–26 kls',  description: 'Crispy skin, tender Bohol-style lechon. Comes with FREE Dinuguan & FREE Inatayan! Pre-order 1 day advance.', price: 10000, unit: 'piece', pricing_type: 'whole_lechon', sort_order: 6,  is_available: true },
+        { id: 'wl-7',  category: '🐷 Whole Lechon', name: 'Whole Lechon 27–28 kls',  description: 'Crispy skin, tender Bohol-style lechon. Comes with FREE Dinuguan & FREE Inatayan! Pre-order 1 day advance.', price: 10500, unit: 'piece', pricing_type: 'whole_lechon', sort_order: 7,  is_available: true },
+        { id: 'wl-8',  category: '🐷 Whole Lechon', name: 'Whole Lechon 29–30 kls',  description: 'Crispy skin, tender Bohol-style lechon. Comes with FREE Dinuguan & FREE Inatayan! Pre-order 1 day advance.', price: 11000, unit: 'piece', pricing_type: 'whole_lechon', sort_order: 8,  is_available: true },
+        { id: 'wl-9',  category: '🐷 Whole Lechon', name: 'Whole Lechon 31–32 kls',  description: 'Crispy skin, tender Bohol-style lechon. Comes with FREE Dinuguan & FREE Inatayan! Pre-order 1 day advance.', price: 11500, unit: 'piece', pricing_type: 'whole_lechon', sort_order: 9,  is_available: true },
+        { id: 'wl-10', category: '🐷 Whole Lechon', name: 'Whole Lechon 33–34 kls',  description: 'Crispy skin, tender Bohol-style lechon. Comes with FREE Dinuguan & FREE Inatayan! Pre-order 1 day advance.', price: 12000, unit: 'piece', pricing_type: 'whole_lechon', sort_order: 10, is_available: true },
+        { id: 'wl-11', category: '🐷 Whole Lechon', name: 'Whole Lechon 35–36 kls',  description: 'Crispy skin, tender Bohol-style lechon. Comes with FREE Dinuguan & FREE Inatayan! Pre-order 1 day advance.', price: 12500, unit: 'piece', pricing_type: 'whole_lechon', sort_order: 11, is_available: true },
+        { id: 'wl-12', category: '🐷 Whole Lechon', name: 'Whole Lechon 37–38 kls',  description: 'Crispy skin, tender Bohol-style lechon. Comes with FREE Dinuguan & FREE Inatayan! Pre-order 1 day advance.', price: 13000, unit: 'piece', pricing_type: 'whole_lechon', sort_order: 12, is_available: true },
+        { id: 'wl-13', category: '🐷 Whole Lechon', name: 'Whole Lechon 39–40 kls',  description: 'Crispy skin, tender Bohol-style lechon. Comes with FREE Dinuguan & FREE Inatayan! Pre-order 1 day advance.', price: 13500, unit: 'piece', pricing_type: 'whole_lechon', sort_order: 13, is_available: true },
+        { id: 'wl-14', category: '🐷 Whole Lechon', name: 'Whole Lechon 41–42 kls',  description: 'Crispy skin, tender Bohol-style lechon. Comes with FREE Dinuguan & FREE Inatayan! Pre-order 1 day advance.', price: 14000, unit: 'piece', pricing_type: 'whole_lechon', sort_order: 14, is_available: true },
+        { id: 'wl-15', category: '🐷 Whole Lechon', name: 'Whole Lechon 43–44 kls',  description: 'Crispy skin, tender Bohol-style lechon. Comes with FREE Dinuguan & FREE Inatayan! Pre-order 1 day advance.', price: 14500, unit: 'piece', pricing_type: 'whole_lechon', sort_order: 15, is_available: true },
+        { id: 'wl-16', category: '🐷 Whole Lechon', name: 'Whole Lechon 45–46 kls',  description: 'Crispy skin, tender Bohol-style lechon. Comes with FREE Dinuguan & FREE Inatayan! Pre-order 1 day advance.', price: 15000, unit: 'piece', pricing_type: 'whole_lechon', sort_order: 16, is_available: true },
+        { id: 'wl-17', category: '🐷 Whole Lechon', name: 'Whole Lechon 47–48 kls',  description: 'Crispy skin, tender Bohol-style lechon. Comes with FREE Dinuguan & FREE Inatayan! Pre-order 1 day advance.', price: 15500, unit: 'piece', pricing_type: 'whole_lechon', sort_order: 17, is_available: true },
+        { id: 'wl-18', category: '🐷 Whole Lechon', name: 'Whole Lechon 49–50 kls',  description: 'Crispy skin, tender Bohol-style lechon. Comes with FREE Dinuguan & FREE Inatayan! Pre-order 1 day advance.', price: 16000, unit: 'piece', pricing_type: 'whole_lechon', sort_order: 18, is_available: true },
+        // Lechon Belly
+        { id: 'lb-1', category: '🥩 Lechon Belly (Bellychon)', name: 'Bellychon Small',               description: '2.5 kls — Juicy belly roll, crackling skin.', price: 1800, unit: 'roll', pricing_type: 'belly', sort_order: 1, is_available: true },
+        { id: 'lb-2', category: '🥩 Lechon Belly (Bellychon)', name: 'Bellychon Regular',             description: '3.5 kls — Juicy belly roll, crackling skin.', price: 2300, unit: 'roll', pricing_type: 'belly', sort_order: 2, is_available: true },
+        { id: 'lb-3', category: '🥩 Lechon Belly (Bellychon)', name: 'Bellychon Large',               description: '4.5 kls — Juicy belly roll, crackling skin.', price: 2800, unit: 'roll', pricing_type: 'belly', sort_order: 3, is_available: true },
+        { id: 'lb-4', category: '🥩 Lechon Belly (Bellychon)', name: 'Bellychon Jumbo',               description: '5.5 kls — Juicy belly roll, crackling skin.', price: 3300, unit: 'roll', pricing_type: 'belly', sort_order: 4, is_available: true },
+        { id: 'lb-5', category: '🥩 Lechon Belly (Bellychon)', name: 'Bellychon w/ Native Chicken',   description: 'Belly roll stuffed with native chicken inside.', price: 3000, unit: 'roll', pricing_type: 'belly', sort_order: 5, is_available: true },
+        { id: 'lb-6', category: '🥩 Lechon Belly (Bellychon)', name: 'Bellychon w/ Classic Pork Ribs', description: 'Belly roll stuffed with classic pork ribs inside.', price: 3000, unit: 'roll', pricing_type: 'belly', sort_order: 6, is_available: true },
+        // Per kilo
+        { id: 'pk-1', category: '🔪 Lechon Per Kilo', name: 'Lechon Belly — Per Kilo',   description: 'Available at Baluarte Seaside Baclayon every Sunday 5PM.', price: 850, unit: 'kilo', pricing_type: 'per_kilo', sort_order: 1, is_available: true },
+        { id: 'pk-2', category: '🔪 Lechon Per Kilo', name: 'Regular Lechon — Per Kilo', description: 'Available at Baluarte Seaside Baclayon every Sunday 5PM.', price: 800, unit: 'kilo', pricing_type: 'per_kilo', sort_order: 2, is_available: true },
     ]
 }
 
@@ -1391,6 +1568,54 @@ function renderMenu() {
                             <i class="bx bx-plus"></i> Add
                         </button>
                     </div>`
+                } else if (item.pricing_type === 'whole_lechon') {
+                    return `
+                    <div class="menu-item" data-item-id="${item.id}" style="flex-wrap:wrap;">
+                        <div class="menu-item-info" style="width:100%;margin-bottom:0.5rem;">
+                            <div class="menu-item-name">${item.name}</div>
+                            <div class="menu-item-desc">${item.description || ''}</div>
+                            <div class="freebies-toggle" onclick="toggleFreebies('${item.id}')" style="display:inline-flex;align-items:center;gap:0.35rem;margin-top:0.45rem;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:0.75rem;color:var(--dark-green);background:#e8f5e9;border:1.5px solid var(--dark-green);border-radius:6px;padding:0.25rem 0.65rem;user-select:none;">
+                                🎁 View Freebies <i class="bx bx-chevron-down" id="chev-${item.id}" style="font-size:1rem;"></i>
+                            </div>
+                            <div class="freebies-dropdown" id="freebies-${item.id}" style="display:none;margin-top:0.5rem;background:#f0faf2;border:1.5px solid var(--dark-green);border-radius:8px;padding:0.6rem 0.9rem;font-family:'Syne',sans-serif;font-size:0.82rem;color:var(--dark);">
+                                <div style="font-weight:700;color:var(--dark-green);margin-bottom:0.35rem;">Included FREE with every Whole Lechon:</div>
+                                <div style="display:flex;gap:1.25rem;flex-wrap:wrap;">
+                                    <span>✅ <strong>FREE Dinuguan</strong></span>
+                                    <span>✅ <strong>FREE Inatayan</strong></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="display:flex;align-items:center;justify-content:space-between;width:100%;gap:0.75rem;flex-wrap:wrap;">
+                            <div class="menu-item-price">₱${Number(item.price).toLocaleString()}<span class="menu-item-unit">per piece</span></div>
+                            <div class="qty-ctrl">
+                                <button class="qty-btn" onclick="adjustQty(this,-1)">−</button>
+                                <span class="qty-val">0</span>
+                                <button class="qty-btn" onclick="adjustQty(this,1)">+</button>
+                            </div>
+                            <button class="add-btn" onclick="addToCart(this,'${item.name.replace(/'/g,"\\'")}',${item.price},'piece')">
+                                <i class="bx bx-plus"></i> Add
+                            </button>
+                        </div>
+                    </div>`
+                } else if (item.pricing_type === 'belly') {
+                    return `
+                    <div class="menu-item" data-item-id="${item.id}" style="flex-wrap:wrap;">
+                        <div class="menu-item-info" style="width:100%;margin-bottom:0.5rem;">
+                            <div class="menu-item-name">${item.name}</div>
+                            <div class="menu-item-desc">${item.description || ''}</div>
+                        </div>
+                        <div style="display:flex;align-items:center;justify-content:space-between;width:100%;gap:0.75rem;flex-wrap:wrap;">
+                            <div class="menu-item-price">₱${Number(item.price).toLocaleString()}<span class="menu-item-unit">per ${item.unit || 'roll'}</span></div>
+                            <div class="qty-ctrl">
+                                <button class="qty-btn" onclick="adjustQty(this,-1)">−</button>
+                                <span class="qty-val">0</span>
+                                <button class="qty-btn" onclick="adjustQty(this,1)">+</button>
+                            </div>
+                            <button class="add-btn" onclick="addToCart(this,'${item.name.replace(/'/g,"\\'")}',${item.price},'${(item.unit||'roll').replace(/'/g,"\\'")}')">
+                                <i class="bx bx-plus"></i> Add
+                            </button>
+                        </div>
+                    </div>`
                 } else {
                     return `
                     <div class="menu-item" data-item-id="${item.id}">
@@ -1416,6 +1641,14 @@ function renderMenu() {
 
 // Load menu on page start
 loadMenu()
+
+function toggleFreebies(itemId) {
+    const dropdown = document.getElementById('freebies-' + itemId)
+    const chev = document.getElementById('chev-' + itemId)
+    const isOpen = dropdown.style.display !== 'none'
+    dropdown.style.display = isOpen ? 'none' : 'block'
+    chev.className = isOpen ? 'bx bx-chevron-down' : 'bx bx-chevron-up'
+}
 
 function adjustQty(btn, delta) {
     const ctrl = btn.closest('.qty-ctrl')
@@ -1548,12 +1781,36 @@ function toggleDelivery() {
 function selectPayment(id) {
     document.querySelectorAll('.pay-opt').forEach(el => el.classList.remove('selected'))
     document.getElementById(id).classList.add('selected')
+    // Show/hide payment detail panels
+    document.getElementById('cod-details').style.display   = (id === 'pay-cod')   ? 'block' : 'none'
+    document.getElementById('gcash-details').style.display = (id === 'pay-gcash') ? 'block' : 'none'
+    document.getElementById('bank-details').style.display  = (id === 'pay-bank')  ? 'block' : 'none'
+    if (id !== 'pay-cod') {
+        codMode = null
+        document.getElementById('cod-shop-panel').style.display   = 'none'
+        document.getElementById('cod-online-panel').style.display = 'none'
+    }
 }
 
-// Set min date to tomorrow
-const tomorrow = new Date()
-tomorrow.setDate(tomorrow.getDate() + 1)
-document.getElementById('f-date').min = tomorrow.toISOString().split('T')[0]
+// COD sub-mode
+let codMode = null
+function selectCodMode(mode) {
+    codMode = mode
+    const shopBtn    = document.getElementById('cod-shop-btn')
+    const onlineBtn  = document.getElementById('cod-online-btn')
+    const shopPanel  = document.getElementById('cod-shop-panel')
+    const onlinePanel= document.getElementById('cod-online-panel')
+    const active = 'background:#fff3cd;border-color:#e65100;color:#e65100;'
+    const base   = 'background:white;border-color:#e0c040;color:#5d4037;'
+    shopBtn.style.cssText   = shopBtn.style.cssText.replace(/background[^;]+;|border-color[^;]+;|color[^;]+;/g,'') + (mode==='shop'   ? active : base)
+    onlineBtn.style.cssText = onlineBtn.style.cssText.replace(/background[^;]+;|border-color[^;]+;|color[^;]+;/g,'') + (mode==='online' ? active : base)
+    shopPanel.style.display   = mode === 'shop'   ? 'block' : 'none'
+    onlinePanel.style.display = mode === 'online' ? 'block' : 'none'
+}
+
+// Set min date to today (no past dates)
+const todayStr = new Date().toISOString().split('T')[0]
+document.getElementById('f-date').min = todayStr
 
 // ─── ORDER NUMBER GENERATOR ──────────────────────────────
 function genOrderNum() {
@@ -1564,6 +1821,16 @@ function genOrderNum() {
 }
 
 // ─── PLACE ORDER ─────────────────────────────────────────
+async function fileToBase64(file) {
+    return new Promise((resolve) => {
+        if (!file) { resolve(null); return }
+        const reader = new FileReader()
+        reader.onload = e => resolve(e.target.result)
+        reader.onerror = () => resolve(null)
+        reader.readAsDataURL(file)
+    })
+}
+
 async function placeOrder() {
     const name    = document.getElementById('f-name').value.trim()
     const phone   = document.getElementById('f-phone').value.trim()
@@ -1584,11 +1851,31 @@ async function placeOrder() {
     if (!type)    errors.push('Please select Delivery or Pickup.')
     if (type === 'delivery' && !address) errors.push('Delivery address is required.')
     if (!date)    errors.push('Please pick a preferred date.')
+    if (date && date < new Date().toISOString().split('T')[0]) errors.push('Please pick today or a future date for delivery.')
     if (!payment) errors.push('Please select a payment method.')
+    if (payment === 'cod') {
+        if (!codMode) errors.push('Please choose how you will pay the downpayment — at the shop or online.')
+        if (codMode === 'online') {
+            const codRef  = document.getElementById('f-cod-ref').value.trim()
+            const codFile = document.getElementById('f-cod-screenshot').files.length
+            if (!codRef && !codFile) errors.push('Please provide your reference number or upload a payment screenshot for the downpayment.')
+        }
+    }
+    if (payment === 'gcash') {
+        const gcashRef = document.getElementById('f-gcash-ref').value.trim()
+        const gcashFile = document.getElementById('f-gcash-screenshot').files.length
+        if (!gcashRef && !gcashFile) errors.push('Please provide your GCash reference number or upload a payment screenshot.')
+    }
+    if (payment === 'bank') {
+        const bankRef = document.getElementById('f-bank-ref').value.trim()
+        const bankFile = document.getElementById('f-bank-screenshot').files.length
+        if (!bankRef && !bankFile) errors.push('Please provide your bank transfer reference number or upload a payment screenshot.')
+    }
 
     if (errors.length) {
         errEl.textContent = errors[0]
         errEl.style.display = 'block'
+        errEl.scrollIntoView({ behavior: 'smooth', block: 'center' })
         return
     }
 
@@ -1598,6 +1885,23 @@ async function placeOrder() {
 
     const orderNum   = genOrderNum()
     const grandTotal = cart.reduce((s,i) => s + i.subtotal, 0)
+
+    // Convert screenshot to base64 for storage
+    let screenshotB64 = null
+    let payRef = null
+    if (payment === 'gcash') {
+        payRef = document.getElementById('f-gcash-ref').value.trim() || null
+        const f = document.getElementById('f-gcash-screenshot').files[0]
+        screenshotB64 = await fileToBase64(f)
+    } else if (payment === 'bank') {
+        payRef = document.getElementById('f-bank-ref').value.trim() || null
+        const f = document.getElementById('f-bank-screenshot').files[0]
+        screenshotB64 = await fileToBase64(f)
+    } else if (payment === 'cod') {
+        payRef = document.getElementById('f-cod-ref').value.trim() || null
+        const f = document.getElementById('f-cod-screenshot').files[0]
+        screenshotB64 = await fileToBase64(f)
+    }
 
     const orderData = {
         order_number:    orderNum,
@@ -1609,6 +1913,9 @@ async function placeOrder() {
         preferred_date:  date,
         preferred_time:  time || 'flexible',
         payment_method:  payment,
+        cod_mode:        payment === 'cod' ? codMode : null,
+        payment_reference: payRef,
+        payment_screenshot: screenshotB64,
         notes:           notes || null,
         items:           JSON.stringify(cart),
         total_amount:    grandTotal,
@@ -1619,8 +1926,19 @@ async function placeOrder() {
     try {
         const { error } = await db.from('orders').insert([orderData])
         if (error) {
-            // If table doesn't exist yet, still show confirmation (graceful fallback)
             console.warn('Supabase insert error:', error.message)
+            // Try without screenshot in case column doesn't exist yet
+            const fallback = { ...orderData }
+            delete fallback.payment_screenshot
+            const { error: e2 } = await db.from('orders').insert([fallback])
+            if (e2) {
+                console.warn('Fallback insert error:', e2.message)
+                errEl.textContent = 'Could not save order: ' + e2.message + '. Please contact us directly.'
+                errEl.style.display = 'block'
+                btn.disabled = false
+                btn.innerHTML = '<i class="bx bx-check-circle"></i> Place Order'
+                return
+            }
         }
     } catch (e) {
         console.warn('Network error:', e)
@@ -1739,6 +2057,15 @@ function startNewOrder() {
     document.getElementById('f-time').value = ''
     document.querySelectorAll('input[name=payment]').forEach(r => r.checked = false)
     document.querySelectorAll('.pay-opt').forEach(el => el.classList.remove('selected'))
+    document.getElementById('gcash-details').style.display = 'none'
+    document.getElementById('bank-details').style.display = 'none'
+    document.getElementById('cod-details').style.display = 'none'
+    document.getElementById('cod-shop-panel').style.display = 'none'
+    document.getElementById('cod-online-panel').style.display = 'none'
+    codMode = null
+    if (document.getElementById('f-gcash-ref')) document.getElementById('f-gcash-ref').value = ''
+    if (document.getElementById('f-bank-ref')) document.getElementById('f-bank-ref').value = ''
+    if (document.getElementById('f-cod-ref')) document.getElementById('f-cod-ref').value = ''
     document.getElementById('delivery-fields').style.display = 'none'
     document.getElementById('page-confirm').classList.remove('visible')
     document.getElementById('page-menu').style.display = 'flex'
