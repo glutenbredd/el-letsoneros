@@ -1164,7 +1164,7 @@ body {
                 </div>
                 <div class="form-field">
                     <label>Phone Number <span class="required-star">*</span></label>
-                    <input type="tel" id="f-phone" placeholder="09XX XXX XXXX" />
+                    <input type="tel" id="f-phone" placeholder="09XX XXX XXXX" maxlength="11" oninput="this.value=this.value.replace(/\D/g,'')" />
                 </div>
             </div>
             <div class="form-row">
@@ -1199,7 +1199,11 @@ body {
                 <div class="form-field">
                     <label>Preferred Date <span class="required-star">*</span></label>
                     <input type="date" id="f-date" />
-                    <span class="form-hint">Orders need at least 1 day advance notice</span>
+                    <span class="form-hint" id="date-hint-text">Orders need at least 1 day advance notice</span>
+                    <!-- Mixed order warning -->
+                    <div id="mixed-order-warning" style="display:none;margin-top:0.55rem;background:#fff3cd;border:2px solid #e65100;border-radius:8px;padding:0.6rem 0.85rem;font-family:'Syne',sans-serif;font-size:0.8rem;color:#b71c1c;font-weight:700;line-height:1.5;">
+                        ⚠️ <strong>Mixed order detected!</strong> Your cart has both Whole Lechon and other items. Whole Lechon requires <em>next-day minimum</em>. If you need the other items on the same day, please place a <em>separate order</em> for them. Use this order only for the Whole Lechon, or set a next-day date for everything.
+                    </div>
                 </div>
                 <div class="form-field">
                     <label>Preferred Time</label>
@@ -1215,11 +1219,15 @@ body {
 
         <div class="form-section">
             <div class="form-section-title"><i class="bx bx-wallet"></i> Payment Method</div>
+            <!-- Whole Lechon downpayment note -->
+            <div id="whole-lechon-downpayment-note" style="display:none;margin-bottom:1rem;background:#fff3cd;border:2px solid #ffc107;border-radius:10px;padding:0.75rem 1rem;font-family:'Syne',sans-serif;font-size:0.85rem;color:#856404;font-weight:700;line-height:1.5;">
+                🐷 <strong>Whole Lechon requires a minimum ₱2,000 downpayment</strong> to confirm your order. You can pay in person at our shop in Baclayon or via GCash/Bank Transfer.
+            </div>
             <div class="payment-opts" id="payment-opts">
                 <label class="pay-opt" id="pay-cod">
                     <input type="radio" name="payment" value="cod" onchange="selectPayment('pay-cod')">
                     <i class="bx bx-money"></i> Cash on Delivery / Pickup
-                    <span style="font-size:0.7rem;font-weight:600;color:var(--red);margin-top:0.2rem;line-height:1.3;text-align:center;">⚠️ Downpayment required<br>(pay to shop or via GCash/PNB)</span>
+                    <span id="cod-downpayment-label" style="display:none;font-size:0.7rem;font-weight:600;color:var(--red);margin-top:0.2rem;line-height:1.3;text-align:center;">⚠️ Downpayment required<br>(pay to shop or via GCash/PNB)</span>
                 </label>
                 <label class="pay-opt" id="pay-gcash">
                     <input type="radio" name="payment" value="gcash" onchange="selectPayment('pay-gcash')">
@@ -1587,11 +1595,7 @@ function renderMenu() {
                         </div>
                         <div style="display:flex;align-items:center;justify-content:space-between;width:100%;gap:0.75rem;flex-wrap:wrap;">
                             <div class="menu-item-price">₱${Number(item.price).toLocaleString()}<span class="menu-item-unit">per piece</span></div>
-                            <div class="qty-ctrl">
-                                <button class="qty-btn" onclick="adjustQty(this,-1)">−</button>
-                                <span class="qty-val">0</span>
-                                <button class="qty-btn" onclick="adjustQty(this,1)">+</button>
-                            </div>
+                            <div style="font-size:0.72rem;color:#e65100;font-family:'Syne',sans-serif;font-weight:700;background:#fff3cd;border:1.5px solid #ffc107;border-radius:6px;padding:0.2rem 0.55rem;">⏰ Next-day minimum</div>
                             <button class="add-btn" onclick="addToCart(this,'${item.name.replace(/'/g,"\\'")}',${item.price},'piece')">
                                 <i class="bx bx-plus"></i> Add
                             </button>
@@ -1606,11 +1610,6 @@ function renderMenu() {
                         </div>
                         <div style="display:flex;align-items:center;justify-content:space-between;width:100%;gap:0.75rem;flex-wrap:wrap;">
                             <div class="menu-item-price">₱${Number(item.price).toLocaleString()}<span class="menu-item-unit">per ${item.unit || 'roll'}</span></div>
-                            <div class="qty-ctrl">
-                                <button class="qty-btn" onclick="adjustQty(this,-1)">−</button>
-                                <span class="qty-val">0</span>
-                                <button class="qty-btn" onclick="adjustQty(this,1)">+</button>
-                            </div>
                             <button class="add-btn" onclick="addToCart(this,'${item.name.replace(/'/g,"\\'")}',${item.price},'${(item.unit||'roll').replace(/'/g,"\\'")}')">
                                 <i class="bx bx-plus"></i> Add
                             </button>
@@ -1624,11 +1623,6 @@ function renderMenu() {
                             <div class="menu-item-desc">${item.description || ''}</div>
                         </div>
                         <div class="menu-item-price">₱${Number(item.price).toLocaleString()}<span class="menu-item-unit">per ${item.unit || 'piece'}</span></div>
-                        <div class="qty-ctrl">
-                            <button class="qty-btn" onclick="adjustQty(this,-1)">−</button>
-                            <span class="qty-val">0</span>
-                            <button class="qty-btn" onclick="adjustQty(this,1)">+</button>
-                        </div>
                         <button class="add-btn" onclick="addToCart(this,'${item.name.replace(/'/g,"\\'")}',${item.price},'${(item.unit||'piece').replace(/'/g,"\\'")}')">
                             <i class="bx bx-plus"></i> Add
                         </button>
@@ -1658,17 +1652,20 @@ function adjustQty(btn, delta) {
 }
 
 function addToCart(btn, name, price, unit) {
-    const ctrl = btn.closest('.menu-item').querySelector('.qty-ctrl')
-    const val  = ctrl.querySelector('.qty-val')
-    let qty = parseInt(val.textContent)
-    if (qty === 0) { showToast('Set a quantity first!', 'error'); return }
+    // If there's a qty-ctrl on the menu item, use it; otherwise default to 1
+    const ctrl = btn.closest('.menu-item')?.querySelector('.qty-ctrl')
+    const val  = ctrl?.querySelector('.qty-val')
+    let qty = val ? parseInt(val.textContent) : 1
+    if (qty < 1) qty = 1
     const existing = cart.find(i => i.name === name)
     if (existing) existing.qty += qty
     else cart.push({ name, price, unit, qty, subtotal: price * qty })
     cart.forEach(i => i.subtotal = i.price * i.qty)
-    val.textContent = 0
+    if (val) val.textContent = 0
     renderCart()
     showToast(`${qty}× ${name} added!`, 'success')
+    updateDownpaymentNote()
+    updateDateConstraints()
 }
 
 function addKiloToCart(itemId, itemName, pricePerKilo) {
@@ -1680,12 +1677,24 @@ function addKiloToCart(itemId, itemName, pricePerKilo) {
     cart.push({ name, price, unit: `${kg}kg`, qty: 1, subtotal: price })
     wInput.value = 1
     renderCart()
+    updateDownpaymentNote()
+    updateDateConstraints()
     showToast(`${kg}kg added!`, 'success')
 }
 
 function removeFromCart(idx) {
     cart.splice(idx, 1)
     renderCart()
+    updateDownpaymentNote()
+    updateDateConstraints()
+}
+
+function cartAdjustQty(idx, delta) {
+    cart[idx].qty = Math.max(1, cart[idx].qty + delta)
+    cart[idx].subtotal = cart[idx].price * cart[idx].qty
+    renderCart()
+    updateDownpaymentNote()
+    updateDateConstraints()
 }
 
 function renderCart() {
@@ -1714,7 +1723,12 @@ function renderCart() {
         line.innerHTML = `
             <div class="cart-line-name">
                 ${item.name}
-                <span class="cart-line-sub">${item.qty > 1 ? item.qty+'×' : ''} ₱${item.price.toLocaleString()}</span>
+                <span class="cart-line-sub">₱${item.price.toLocaleString()} each</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.3rem;flex-shrink:0;">
+                <button class="qty-btn" style="width:24px;height:24px;font-size:0.85rem;" onclick="cartAdjustQty(${i},-1)" title="Decrease">−</button>
+                <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:0.88rem;min-width:18px;text-align:center;">${item.qty}</span>
+                <button class="qty-btn" style="width:24px;height:24px;font-size:0.85rem;" onclick="cartAdjustQty(${i},1)" title="Increase">+</button>
             </div>
             <div class="cart-line-price">₱${item.subtotal.toLocaleString()}</div>
             <button class="cart-remove" onclick="removeFromCart(${i})" title="Remove"><i class="bx bx-x"></i></button>
@@ -1727,6 +1741,77 @@ function renderCart() {
     badge.textContent = count
     total.textContent = '₱' + grandTotal.toLocaleString()
     btn.disabled = false
+}
+
+// ─── WHOLE LECHON HELPERS ────────────────────────────────
+function hasWholeInCart() {
+    return cart.some(i => {
+        const item = menuItems.find(m => m.name === i.name)
+        return item && item.pricing_type === 'whole_lechon'
+    })
+}
+function hasNonWholeInCart() {
+    return cart.some(i => {
+        const item = menuItems.find(m => m.name === i.name)
+        return item && item.pricing_type !== 'whole_lechon'
+    })
+}
+
+function updateDownpaymentNote() {
+    const whole = hasWholeInCart()
+    // Top-of-payment-section note
+    const noteEl = document.getElementById('whole-lechon-downpayment-note')
+    if (noteEl) noteEl.style.display = whole ? 'block' : 'none'
+    // Small label inside COD button
+    const codLabel = document.getElementById('cod-downpayment-label')
+    if (codLabel) codLabel.style.display = whole ? 'inline' : 'none'
+    // If COD is already selected, show/hide the downpayment panel accordingly
+    const codSelected = document.querySelector('input[name=payment]:checked')?.value === 'cod'
+    const codDetailsEl = document.getElementById('cod-details')
+    if (codDetailsEl) {
+        if (codSelected && !whole) {
+            codDetailsEl.style.display = 'none'
+            codMode = null
+            document.getElementById('cod-shop-panel').style.display   = 'none'
+            document.getElementById('cod-online-panel').style.display = 'none'
+        } else if (codSelected && whole) {
+            codDetailsEl.style.display = 'block'
+        }
+    }
+    // COD validation: only require downpayment mode if whole lechon in cart
+    // (handled in placeOrder already)
+}
+
+function updateDateConstraints() {
+    const dateInput = document.getElementById('f-date')
+    const dateHintEl = document.getElementById('date-hint-text')
+    const mixedWarnEl = document.getElementById('mixed-order-warning')
+    if (!dateInput) return
+
+    const wholePres = hasWholeInCart()
+    const nonWholePres = hasNonWholeInCart()
+    const today = new Date()
+    today.setHours(0,0,0,0)
+
+    if (wholePres) {
+        // Minimum date = tomorrow
+        const tomorrow = new Date(today)
+        tomorrow.setDate(tomorrow.getDate() + 1)
+        dateInput.min = tomorrow.toISOString().split('T')[0]
+        // If currently selected date is today, clear it
+        if (dateInput.value && dateInput.value <= today.toISOString().split('T')[0]) {
+            dateInput.value = ''
+        }
+        if (dateHintEl) dateHintEl.textContent = '🐷 Whole Lechon requires next-day minimum — please select tomorrow or later.'
+    } else {
+        // Allow today
+        dateInput.min = today.toISOString().split('T')[0]
+        if (dateHintEl) dateHintEl.textContent = 'Orders need at least 1 day advance notice'
+    }
+
+    if (mixedWarnEl) {
+        mixedWarnEl.style.display = (wholePres && nonWholePres) ? 'block' : 'none'
+    }
 }
 
 // ─── STEP NAVIGATION ─────────────────────────────────────
@@ -1745,6 +1830,8 @@ function goToCheckout() {
     document.getElementById('page-checkout').classList.add('visible')
     renderSummary()
     setStep(2)
+    updateDownpaymentNote()
+    updateDateConstraints()
     window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
@@ -1781,8 +1868,9 @@ function toggleDelivery() {
 function selectPayment(id) {
     document.querySelectorAll('.pay-opt').forEach(el => el.classList.remove('selected'))
     document.getElementById(id).classList.add('selected')
-    // Show/hide payment detail panels
-    document.getElementById('cod-details').style.display   = (id === 'pay-cod')   ? 'block' : 'none'
+    // COD downpayment box only relevant for whole lechon
+    const wholeInCart = hasWholeInCart()
+    document.getElementById('cod-details').style.display   = (id === 'pay-cod' && wholeInCart) ? 'block' : 'none'
     document.getElementById('gcash-details').style.display = (id === 'pay-gcash') ? 'block' : 'none'
     document.getElementById('bank-details').style.display  = (id === 'pay-bank')  ? 'block' : 'none'
     if (id !== 'pay-cod') {
@@ -1808,9 +1896,9 @@ function selectCodMode(mode) {
     onlinePanel.style.display = mode === 'online' ? 'block' : 'none'
 }
 
-// Set min date to today (no past dates)
+// Set min date to today (updated dynamically by updateDateConstraints)
 const todayStr = new Date().toISOString().split('T')[0]
-document.getElementById('f-date').min = todayStr
+if (document.getElementById('f-date')) document.getElementById('f-date').min = todayStr
 
 // ─── ORDER NUMBER GENERATOR ──────────────────────────────
 function genOrderNum() {
@@ -1848,12 +1936,22 @@ async function placeOrder() {
     const errors = []
     if (!name)    errors.push('Full name is required.')
     if (!phone)   errors.push('Phone number is required.')
+    else if (!/^\d{11}$/.test(phone)) errors.push('Phone number must be exactly 11 digits (e.g. 09171234567).')
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.push('Please enter a valid email address (e.g. you@example.com).')
     if (!type)    errors.push('Please select Delivery or Pickup.')
     if (type === 'delivery' && !address) errors.push('Delivery address is required.')
     if (!date)    errors.push('Please pick a preferred date.')
-    if (date && date < new Date().toISOString().split('T')[0]) errors.push('Please pick today or a future date for delivery.')
+    if (date) {
+        const todayDate = new Date().toISOString().split('T')[0]
+        if (date < todayDate) errors.push('Please pick today or a future date for delivery.')
+        if (hasWholeInCart()) {
+            const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate()+1)
+            const tomorrowStr = tomorrow.toISOString().split('T')[0]
+            if (date < tomorrowStr) errors.push('Whole Lechon orders require next-day minimum — please select tomorrow or later.')
+        }
+    }
     if (!payment) errors.push('Please select a payment method.')
-    if (payment === 'cod') {
+    if (payment === 'cod' && hasWholeInCart()) {
         if (!codMode) errors.push('Please choose how you will pay the downpayment — at the shop or online.')
         if (codMode === 'online') {
             const codRef  = document.getElementById('f-cod-ref').value.trim()
@@ -2066,6 +2164,11 @@ function startNewOrder() {
     if (document.getElementById('f-gcash-ref')) document.getElementById('f-gcash-ref').value = ''
     if (document.getElementById('f-bank-ref')) document.getElementById('f-bank-ref').value = ''
     if (document.getElementById('f-cod-ref')) document.getElementById('f-cod-ref').value = ''
+    // Clear all file inputs so old screenshot selections don't persist
+    ;['f-gcash-screenshot','f-cod-screenshot','f-bank-screenshot'].forEach(id => {
+        const el = document.getElementById(id)
+        if (el) { el.value = ''; try { el.type='text'; el.type='file' } catch(e){} }
+    })
     document.getElementById('delivery-fields').style.display = 'none'
     document.getElementById('page-confirm').classList.remove('visible')
     document.getElementById('page-menu').style.display = 'flex'
