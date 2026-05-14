@@ -898,9 +898,12 @@ footer span {
         padding: 0.5rem 1rem;
     }
     .gallery {
-        display: grid !important;
+        display: none !important;
         grid-template-columns: repeat(2, 1fr);
         gap: 0.75rem;
+    }
+    .gallery.open {
+        display: grid !important;
     }
     .gallery img {
         border-radius: 10px;
