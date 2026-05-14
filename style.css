@@ -33,29 +33,7 @@ body {
     background-color: var(--sand);
     color: var(--green);
     overflow-x: hidden;
-    cursor: none;
     padding-top: 60px;
-}
-
-.cursor {
-    width: 18px;
-    height: 18px;
-    background: var(--sun);
-    border-radius: 50%;
-    position: fixed;
-    top: 0;
-    left: 0;
-    pointer-events: none;
-    z-index: 9999;
-    transform: translate(-50%, -50%);
-    transition: transform 0.1s, width 0.2s, height 0.2s, background 0.2s;
-}
-
-.cursor.big {
-    width: 48px;
-    height: 48px;
-    background: var(--red);
-    opacity: 0.5;
 }
 
 .header {
@@ -801,7 +779,6 @@ footer span {
 @media (max-width: 768px) {
 
     /* ── CURSOR: hide on touch ── */
-    .cursor { display: none; }
     body { cursor: auto; }
 
     /* ── HEADER ── */
