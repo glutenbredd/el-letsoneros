@@ -551,6 +551,141 @@ body {
     100%{ box-shadow: 0 0 0 0 rgba(76,175,80,0); }
 }
 
+/* ── MENU EDITOR ── */
+.menu-editor-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+@media (max-width: 860px) { .menu-editor-grid { grid-template-columns: 1fr; } }
+
+.menu-editor-form {
+    background: white;
+    border: 2px solid var(--dark);
+    border-radius: 14px;
+    padding: 1.75rem;
+    box-shadow: 5px 5px 0 var(--dark);
+}
+.menu-editor-form h3 {
+    font-size: 1rem; font-weight: 800;
+    color: var(--dark); margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--sand);
+    display: flex; align-items: center; gap: 0.5rem;
+}
+.menu-editor-form h3 i { color: var(--dark-green); }
+
+.mf { margin-bottom: 1rem; }
+.mf label {
+    display: block;
+    font-size: 0.68rem; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--dark-green); margin-bottom: 5px;
+}
+.mf input, .mf select, .mf textarea {
+    width: 100%; border: 2px solid #c5c5b0;
+    border-radius: 8px; background: var(--cream);
+    font-family: 'Syne', sans-serif;
+    font-size: 0.9rem; color: var(--dark);
+    padding: 0.5rem 0.85rem; outline: none;
+    transition: border-color .2s;
+}
+.mf textarea { min-height: 70px; resize: vertical; }
+.mf input:focus, .mf select:focus, .mf textarea:focus {
+    border-color: var(--accent-green);
+    box-shadow: 0 0 0 3px rgba(58,125,68,.12);
+}
+.mf-row { display: flex; gap: 0.75rem; }
+.mf-row .mf { flex: 1; }
+
+.menu-save-btn {
+    width: 100%; height: 44px;
+    background: var(--dark-green); color: white;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 0.9rem;
+    border: 2px solid var(--dark); border-radius: 8px;
+    cursor: pointer; box-shadow: 3px 3px 0 var(--dark);
+    display: flex; align-items: center; justify-content: center; gap: 0.4rem;
+    transition: transform .15s, box-shadow .15s;
+    margin-top: 0.5rem;
+}
+.menu-save-btn:hover { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 var(--dark); }
+.menu-save-btn:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+.menu-cancel-btn {
+    width: 100%; height: 38px; margin-top: 0.5rem;
+    background: transparent; color: var(--body-text);
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.85rem;
+    border: 1.5px solid #ccc; border-radius: 8px; cursor: pointer;
+    transition: border-color .2s, color .2s;
+}
+.menu-cancel-btn:hover { border-color: var(--dark); color: var(--dark); }
+
+.menu-items-list {
+    background: white;
+    border: 2px solid var(--dark);
+    border-radius: 14px;
+    box-shadow: 5px 5px 0 var(--dark);
+    overflow: hidden;
+}
+.menu-items-list-head {
+    background: var(--dark);
+    padding: 1rem 1.5rem;
+    display: flex; align-items: center; justify-content: space-between;
+}
+.menu-items-list-head span {
+    font-weight: 800; font-size: 1rem; color: var(--sun);
+    display: flex; align-items: center; gap: 0.5rem;
+}
+.menu-items-list-body { max-height: 520px; overflow-y: auto; }
+
+.menu-item-row {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.9rem 1.5rem;
+    border-bottom: 1px solid #f0ede6;
+    transition: background .15s;
+}
+.menu-item-row:last-child { border-bottom: none; }
+.menu-item-row:hover { background: #fafaf5; }
+.menu-item-row.unavailable { opacity: 0.45; }
+
+.mir-info { flex: 1; min-width: 0; }
+.mir-name {
+    font-weight: 700; font-size: 0.9rem;
+    color: var(--dark); white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis;
+}
+.mir-cat {
+    font-size: 0.7rem; color: #aaa; font-weight: 500; margin-top: 2px;
+}
+.mir-price {
+    font-weight: 800; font-size: 0.92rem;
+    color: var(--dark-green); white-space: nowrap;
+}
+.mir-type-badge {
+    font-size: 0.65rem; font-weight: 700; letter-spacing: 0.06em;
+    padding: 0.15rem 0.5rem; border-radius: 10px;
+    background: #e8f5e9; color: var(--dark-green);
+    text-transform: uppercase; white-space: nowrap;
+}
+.mir-actions { display: flex; gap: 0.4rem; flex-shrink: 0; }
+
+.menu-list-empty {
+    text-align: center; padding: 3rem;
+    color: #bbb; font-family: 'Syne', sans-serif;
+    font-size: 0.85rem; font-weight: 700;
+}
+.menu-list-empty i { font-size: 2.5rem; display: block; margin-bottom: 0.5rem; }
+
+.avail-toggle {
+    width: 32px; height: 32px; border-radius: 7px;
+    border: 2px solid #ddd; background: white;
+    font-size: 0.9rem; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: background .15s, border-color .15s;
+}
+.avail-toggle.on  { background: #d4edda; border-color: var(--green); color: var(--green); }
+.avail-toggle.off { background: #f8d7da; border-color: var(--red); color: var(--red); }
 
 @media (max-width: 768px) {
     :root { --sidebar-w: 0px; }
@@ -652,6 +787,13 @@ body {
             <i class="bx bx-x-circle"></i> Cancelled
             <span class="sidebar-count" id="cnt-cancelled">0</span>
         </div>
+        <div class="sidebar-section-label" style="margin-top:1.5rem;">Settings</div>
+        <div class="sidebar-link" id="nav-menu-editor" onclick="switchView('menu-editor')">
+            <i class="bx bx-food-menu"></i> Menu Editor
+        </div>
+        <div class="sidebar-link" id="nav-site-editor" onclick="openSiteEditor()">
+            <i class="bx bx-edit-alt"></i> Site Editor
+        </div>
     </div>
 
     <!-- MAIN -->
@@ -746,9 +888,10 @@ body {
 </div><!-- /dashboard -->
 
 <!-- ════════════════════════════════════════
-     ORDER DETAIL MODAL (placeholder start marker removed)
+     MENU EDITOR VIEW (injected into main at runtime)
 ════════════════════════════════════════ -->
-<div style="display:none" id="view-menu-editor">
+<template id="tpl-menu-editor">
+<div class="view" id="view-menu-editor">
     <div class="page-header">
         <div class="page-title"><span>Menu</span> Editor</div>
     </div>
@@ -832,7 +975,53 @@ body {
             </div>
         </div>
 
+    </div><!-- /menu-editor-grid -->
 
+    <!-- SQL Setup helper -->
+    <div style="background:var(--sand);border:2px solid #c5c5b0;border-radius:12px;padding:1.25rem 1.5rem;margin-top:1rem;">
+        <div style="font-size:0.7rem;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--mid-green);margin-bottom:0.6rem;">
+            <i class="bx bx-info-circle"></i> First-Time Setup — Run this SQL in your Supabase Dashboard → SQL Editor
+        </div>
+        <pre style="background:var(--dark);color:#a5f3a5;border-radius:8px;padding:1rem;font-size:0.75rem;overflow-x:auto;line-height:1.6;margin:0;">-- 1. Admin users table (replaces hardcoded email)
+CREATE TABLE IF NOT EXISTS admin_users (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  email text NOT NULL UNIQUE,
+  created_at timestamptz DEFAULT now()
+);
+ALTER TABLE admin_users ENABLE ROW LEVEL SECURITY;
+-- Only authenticated users can read (needed for the login check)
+CREATE POLICY "Auth read" ON admin_users FOR SELECT USING (auth.role() = 'authenticated');
+
+-- Insert your admin accounts here:
+INSERT INTO admin_users (email) VALUES ('deligero.137@gmail.com')
+ON CONFLICT (email) DO NOTHING;
+
+-- 2. Add all required columns to orders table (run once)
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS completed_at timestamptz;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS delivered_at timestamptz;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS payment_reference text;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS payment_screenshot text;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS admin_note text;
+
+-- 3. Menu items table
+CREATE TABLE IF NOT EXISTS menu_items (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  name text NOT NULL,
+  category text NOT NULL,
+  description text,
+  price numeric NOT NULL,
+  unit text DEFAULT 'piece',
+  pricing_type text DEFAULT 'fixed',
+  sort_order integer DEFAULT 0,
+  is_available boolean DEFAULT true,
+  created_at timestamptz DEFAULT now()
+);
+ALTER TABLE menu_items ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public read" ON menu_items FOR SELECT USING (true);
+CREATE POLICY "Admin write" ON menu_items FOR ALL USING (auth.role() = 'authenticated');</pre>
+    </div>
+</div>
+</template>
 
 <!-- ════════════════════════════════════════
      ORDER DETAIL MODAL
@@ -1000,6 +1189,10 @@ function showDashboard(user) {
     startRealtime()
 }
 
+function openSiteEditor() {
+    window.open('index.html?adminmode=1', '_blank')
+}
+
 async function doSignOut() {
     if (realtimeSub) db.removeChannel(realtimeSub)
     await db.auth.signOut()
@@ -1109,6 +1302,28 @@ function switchView(v) {
     currentView = v
     document.querySelectorAll('.sidebar-link').forEach(el => el.classList.remove('active'))
     document.getElementById('nav-' + v)?.classList.add('active')
+
+    if (v === 'menu-editor') {
+        // Show/hide views
+        document.querySelectorAll('.view').forEach(el => el.classList.remove('active'))
+        document.getElementById('stats-row').style.display = 'none'
+        document.querySelector('.page-header').style.display = 'none'
+        document.querySelector('.toolbar')?.classList.add('view')
+        document.querySelector('.orders-table-wrap')?.classList.add('view')
+
+        // Inject the menu editor template if not yet there
+        injectMenuEditorView()
+        document.getElementById('view-menu-editor').classList.add('active')
+        loadMenuItems()
+        return
+    }
+
+    // Restore orders view elements
+    document.getElementById('stats-row').style.display = ''
+    document.querySelector('.page-header').style.display = ''
+    document.querySelector('.toolbar')?.classList.remove('view')
+    document.querySelector('.orders-table-wrap')?.classList.remove('view')
+    document.getElementById('view-menu-editor')?.classList.remove('active')
 
     const labels = {
         all:'All', pending:'Pending', confirmed:'Confirmed',
@@ -1387,6 +1602,164 @@ document.getElementById('order-modal').addEventListener('click', function(e) {
     if (e.target === this) closeModal()
 })
 
+// ─── MENU EDITOR ──────────────────────────────────────────
+let allMenuItems = []
+let meEditingId  = null
+
+function injectMenuEditorView() {
+    const main = document.querySelector('.main')
+    if (document.getElementById('view-menu-editor')) return
+    const tpl = document.getElementById('tpl-menu-editor')
+    const clone = tpl.content.cloneNode(true)
+    main.appendChild(clone)
+}
+
+async function loadMenuItems() {
+    const body = document.getElementById('me-list-body')
+    if (!body) return
+    body.innerHTML = `<div class="menu-list-empty"><i class="bx bx-loader-alt bx-spin"></i> Loading…</div>`
+
+    const { data, error } = await db
+        .from('menu_items')
+        .select('*')
+        .order('category')
+        .order('sort_order')
+
+    if (error) {
+        body.innerHTML = `<div class="menu-list-empty" style="color:var(--red);">
+            <i class="bx bx-error-circle"></i>
+            Could not load items. Make sure the <strong>menu_items</strong> table exists in Supabase (see SQL setup below).
+        </div>`
+        return
+    }
+
+    allMenuItems = data || []
+
+    // Populate category datalist for autocomplete
+    const cats = [...new Set(allMenuItems.map(i => i.category))]
+    const dl = document.getElementById('me-cat-list')
+    if (dl) dl.innerHTML = cats.map(c => `<option value="${c}">`).join('')
+
+    if (allMenuItems.length === 0) {
+        body.innerHTML = `<div class="menu-list-empty"><i class="bx bx-bowl-hot"></i> No items yet. Add your first menu item!</div>`
+        return
+    }
+
+    body.innerHTML = allMenuItems.map(item => `
+        <div class="menu-item-row ${item.is_available ? '' : 'unavailable'}" id="mir-${item.id}">
+            <div class="mir-info">
+                <div class="mir-name">${esc(item.name)}</div>
+                <div class="mir-cat">${esc(item.category)}</div>
+            </div>
+            <div class="mir-price">₱${Number(item.price).toLocaleString()}<span style="font-size:0.7rem;color:#aaa;font-weight:500;">/${item.unit}</span></div>
+            <span class="mir-type-badge">${item.pricing_type === 'per_kilo' ? 'per kg' : 'fixed'}</span>
+            <div class="mir-actions">
+                <button class="avail-toggle ${item.is_available ? 'on' : 'off'}" title="${item.is_available ? 'Hide from menu' : 'Show on menu'}"
+                    onclick="toggleAvailability('${item.id}', ${item.is_available})">
+                    <i class="bx ${item.is_available ? 'bx-show' : 'bx-hide'}"></i>
+                </button>
+                <button class="action-btn view-btn" title="Edit" onclick="editMenuItem('${item.id}')">
+                    <i class="bx bx-edit"></i>
+                </button>
+                <button class="action-btn del-btn" title="Delete" onclick="deleteMenuItem('${item.id}')">
+                    <i class="bx bx-trash"></i>
+                </button>
+            </div>
+        </div>
+    `).join('')
+}
+
+function editMenuItem(id) {
+    const item = allMenuItems.find(i => i.id === id)
+    if (!item) return
+    meEditingId = id
+    document.getElementById('me-edit-id').value = id
+    document.getElementById('me-name').value = item.name
+    document.getElementById('me-category').value = item.category
+    document.getElementById('me-desc').value = item.description || ''
+    document.getElementById('me-price').value = item.price
+    document.getElementById('me-unit').value = item.unit || 'piece'
+    document.getElementById('me-pricing-type').value = item.pricing_type || 'fixed'
+    document.getElementById('me-sort').value = item.sort_order || 0
+    document.getElementById('me-available').value = String(item.is_available !== false)
+    document.getElementById('me-form-title').textContent = 'Edit Item'
+    document.getElementById('me-save-label').textContent = 'Update Item'
+    document.getElementById('me-cancel-btn').style.display = 'block'
+    document.getElementById('me-save-btn').innerHTML = '<i class="bx bx-save"></i> Update Item'
+    document.getElementById('me-name').focus()
+    document.querySelector('.menu-editor-form').scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
+function resetMenuForm() {
+    meEditingId = null
+    document.getElementById('me-edit-id').value = ''
+    document.getElementById('me-name').value = ''
+    document.getElementById('me-category').value = ''
+    document.getElementById('me-desc').value = ''
+    document.getElementById('me-price').value = ''
+    document.getElementById('me-unit').value = ''
+    document.getElementById('me-pricing-type').value = 'fixed'
+    document.getElementById('me-sort').value = 0
+    document.getElementById('me-available').value = 'true'
+    document.getElementById('me-form-title').textContent = 'Add New Item'
+    document.getElementById('me-save-label').textContent = 'Save Item'
+    document.getElementById('me-cancel-btn').style.display = 'none'
+}
+
+async function saveMenuItem() {
+    const name     = document.getElementById('me-name').value.trim()
+    const category = document.getElementById('me-category').value.trim()
+    const desc     = document.getElementById('me-desc').value.trim()
+    const price    = parseFloat(document.getElementById('me-price').value)
+    const unit     = document.getElementById('me-unit').value.trim() || 'piece'
+    const ptype    = document.getElementById('me-pricing-type').value
+    const sort     = parseInt(document.getElementById('me-sort').value) || 0
+    const avail    = document.getElementById('me-available').value === 'true'
+
+    if (!name || !category || isNaN(price)) {
+        showToast('Name, category and price are required.', 'err'); return
+    }
+
+    const btn = document.getElementById('me-save-btn')
+    btn.disabled = true
+    btn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Saving…'
+
+    const payload = { name, category, description: desc, price, unit, pricing_type: ptype, sort_order: sort, is_available: avail }
+
+    let error
+    if (meEditingId) {
+        const res = await db.from('menu_items').update(payload).eq('id', meEditingId)
+        error = res.error
+    } else {
+        const res = await db.from('menu_items').insert([payload])
+        error = res.error
+    }
+
+    btn.disabled = false
+    btn.innerHTML = `<i class="bx bx-save"></i> ${meEditingId ? 'Update Item' : 'Save Item'}`
+
+    if (error) { showToast('Error: ' + error.message, 'err'); return }
+
+    showToast(meEditingId ? 'Item updated!' : 'Item added!', 'ok')
+    resetMenuForm()
+    loadMenuItems()
+}
+
+async function deleteMenuItem(id) {
+    const item = allMenuItems.find(i => i.id === id)
+    if (!confirm(`Delete "${item?.name}"? This cannot be undone.`)) return
+    const { error } = await db.from('menu_items').delete().eq('id', id)
+    if (error) { showToast('Delete failed: ' + error.message, 'err'); return }
+    showToast('Item deleted.', 'ok')
+    loadMenuItems()
+}
+
+async function toggleAvailability(id, current) {
+    const { error } = await db.from('menu_items').update({ is_available: !current }).eq('id', id)
+    if (error) { showToast('Error: ' + error.message, 'err'); return }
+    showToast(!current ? 'Item shown on menu.' : 'Item hidden from menu.', 'ok')
+    loadMenuItems()
+}
 
 // ─── INIT ─────────────────────────────────────────────────
 initAuth()
