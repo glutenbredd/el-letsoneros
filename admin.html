@@ -1761,6 +1761,35 @@ async function executeDeleteOrder() {
     const deletedId = currentOrder.id
     const btn = document.getElementById('confirm-delete-btn')
     btn.disabled = true; btn.textContent = 'Deleting…'
+
+    // Delete screenshot from Supabase Storage if one exists
+    const screenshotUrl = currentOrder.payment_screenshot
+    if (screenshotUrl && screenshotUrl.startsWith('http')) {
+        try {
+            const bucket = 'order-screenshots'
+            const marker = `/object/public/${bucket}/`
+            const markerIdx = screenshotUrl.indexOf(marker)
+            if (markerIdx !== -1) {
+                // Strip any query string (e.g. ?t=...) before using as path
+                const rawPath = screenshotUrl.slice(markerIdx + marker.length).split('?')[0]
+                const storagePath = decodeURIComponent(rawPath)
+                console.log('[Delete] Removing storage file:', storagePath)
+                const { data: removeData, error: storageErr } = await db.storage
+                    .from(bucket)
+                    .remove([storagePath])
+                if (storageErr) {
+                    console.warn('[Delete] Storage delete error:', storageErr.message)
+                } else {
+                    console.log('[Delete] Storage delete success:', removeData)
+                }
+            } else {
+                console.warn('[Delete] Could not find bucket marker in URL:', screenshotUrl)
+            }
+        } catch (e) {
+            console.warn('[Delete] Exception during storage delete:', e)
+        }
+    }
+
     const { error } = await db.from('orders').delete().eq('id', deletedId)
     btn.disabled = false; btn.textContent = 'Yes, Delete'
     document.getElementById('delete-confirm-overlay').style.display = 'none'
