@@ -2284,6 +2284,14 @@ async function trackOrder() {
             </div>
         `).join('')
 
+        const trackTimeLabels = { morning: 'Morning (6AM–11AM)', noon: 'Noon (11AM–2PM)', afternoon: 'Afternoon (2PM–6PM)', flexible: 'Flexible' }
+        const trackPayLabels  = { cod: 'Cash on Delivery/Pickup', gcash: 'GCash', bank: 'Bank Transfer' }
+        const trackTimeVal    = trackTimeLabels[data.preferred_time] || 'Flexible'
+        const trackPayVal     = trackPayLabels[data.payment_method]  || data.payment_method
+        const trackPlacedOn   = data.created_at
+            ? new Date(data.created_at).toLocaleString('en-PH', { month: 'numeric', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true })
+            : '—'
+
         res.innerHTML = `
             <div class="track-card">
                 <div class="track-card-head">
@@ -2292,9 +2300,11 @@ async function trackOrder() {
                 </div>
                 <div class="track-card-body">
                     <div class="track-info-row"><span class="track-info-key">Customer</span><span class="track-info-val">${data.customer_name}</span></div>
-                    <div class="track-info-row"><span class="track-info-key">Date</span><span class="track-info-val">${data.preferred_date}</span></div>
+                    <div class="track-info-row"><span class="track-info-key">Date</span><span class="track-info-val">${new Date(data.preferred_date + 'T00:00').toLocaleDateString('en-PH', {weekday:'long', year:'numeric', month:'long', day:'numeric'})}</span></div>
+                    <div class="track-info-row"><span class="track-info-key">Time</span><span class="track-info-val">${trackTimeVal}</span></div>
                     <div class="track-info-row"><span class="track-info-key">Type</span><span class="track-info-val">${data.order_type === 'delivery' ? '🏠 Delivery' : '📦 Pickup'}</span></div>
-                    <div class="track-info-row"><span class="track-info-key">Payment</span><span class="track-info-val">${data.payment_method}</span></div>
+                    <div class="track-info-row"><span class="track-info-key">Payment</span><span class="track-info-val">${trackPayVal}</span></div>
+                    <div class="track-info-row"><span class="track-info-key">Placed On</span><span class="track-info-val">${trackPlacedOn}</span></div>
                     <div class="track-items-list">
                         ${itemsHtml}
                         <div class="track-total-row">
