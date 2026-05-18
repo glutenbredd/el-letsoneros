@@ -851,7 +851,7 @@ body {
     font-family: 'Syne', sans-serif;
     font-size: 0.95rem;
     color: var(--dark);
-    padding: 4%;
+    padding: 0 12px;
     outline: none;
     transition: border-color 0.2s;
 }
@@ -2413,24 +2413,24 @@ function closeQrScanner() {
 }
 
 function startQrDetection(video, status) {
-    if (!('BarcodeDetector' in window)) {
-        status.style.color = '#ffc107'
-        status.textContent = 'Auto-scan not supported on this browser — try Chrome on Android.'
-        return
-    }
-    const detector = new BarcodeDetector({ formats: ['qr_code'] })
-    async function detect() {
+    // Uses jsQR — works on all browsers including laptop webcams
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d')
+
+    function detect() {
         if (!qrStream) return
-        try {
-            const codes = await detector.detect(video)
-            if (codes.length > 0) {
-                const raw = codes[0].rawValue
-                // Extract order number — look for ELL-XXXXXX pattern or use full value
+        if (video.readyState === video.HAVE_ENOUGH_DATA) {
+            canvas.width  = video.videoWidth
+            canvas.height = video.videoHeight
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+            const code = jsQR(imageData.data, imageData.width, imageData.height, { inversionAttempts: 'dontInvert' })
+            if (code) {
+                const raw = code.data
                 const match = raw.match(/ELL-[A-Z0-9]+/)
                 const orderNum = match ? match[0] : raw.trim().toUpperCase()
                 document.getElementById('tracker-input').value = orderNum
                 closeQrScanner()
-                // Open tracker and search
                 const body = document.getElementById('tracker-body')
                 const chev = document.getElementById('tracker-chevron')
                 if (!body.classList.contains('open')) {
@@ -2442,7 +2442,7 @@ function startQrDetection(video, status) {
                 showToast('QR scanned: ' + orderNum, 'success')
                 return
             }
-        } catch(e) {}
+        }
         qrAnimFrame = requestAnimationFrame(detect)
     }
     detect()
