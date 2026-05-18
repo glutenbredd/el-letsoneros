@@ -1150,8 +1150,6 @@ body {
                     <div class="tracker-search-row">
                         <input type="text" class="tracker-input" id="tracker-input" placeholder="e.g. ELL-240001" />
                         <button class="tracker-btn" onclick="openQrScanner()" title="Scan QR Code" style="padding:0.55rem 0.85rem;background:var(--sand);color:var(--dark);border-color:var(--dark);flex-shrink:0;"><i class="bx bx-qr-scan" style="font-size:1.1rem;"></i></button>
-                        <button class="tracker-btn" onclick="document.getElementById('qr-upload-input').click()" title="Upload QR Code Image" style="padding:0.55rem 0.85rem;background:var(--sand);color:var(--dark);border-color:var(--dark);flex-shrink:0;"><i class="bx bx-upload" style="font-size:1.1rem;"></i></button>
-                        <input type="file" id="qr-upload-input" accept="image/*" style="display:none;" onchange="handleQrUpload(this)" />
                         <button class="tracker-btn" onclick="trackOrder()" style="flex-shrink:0;"><i class="bx bx-search"></i> Track</button>
                     </div>
                     <div class="tracker-result" id="tracker-result"></div>
@@ -2320,60 +2318,6 @@ async function trackOrder() {
     } catch(e) {
         res.innerHTML = `<span style="color:var(--red);font-size:0.85rem;">Could not connect. Please try again.</span>`
     }
-}
-
-// ─── QR UPLOAD (from image file) ─────────────────────────
-async function handleQrUpload(input) {
-    const file = input.files[0]
-    if (!file) return
-
-    const res = document.getElementById('tracker-result')
-    res.innerHTML = '<span style="color:#aaa;font-size:0.85rem;"><i class="bx bx-loader-alt bx-spin"></i> Reading QR code…</span>'
-
-    // Reset file input so same file can be re-uploaded
-    input.value = ''
-    try { input.type = 'text'; input.type = 'file' } catch(e) {}
-
-    if (!('BarcodeDetector' in window)) {
-        // Fallback: use a canvas + ZXing-style manual decode via an offscreen image
-        res.innerHTML = '<span style="color:var(--red);font-size:0.85rem;">⚠️ QR image reading isn\'t supported in this browser. Try Chrome on Android or desktop.</span>'
-        return
-    }
-
-    const detector = new BarcodeDetector({ formats: ['qr_code'] })
-    const img = new Image()
-    img.onload = async () => {
-        try {
-            const codes = await detector.detect(img)
-            if (!codes.length) {
-                res.innerHTML = '<span style="color:var(--red);font-size:0.85rem;">❌ No QR code found in the image. Make sure the image is clear and try again.</span>'
-                return
-            }
-            const raw = codes[0].rawValue
-            const match = raw.match(/ELL-[A-Z0-9]+/)
-            const orderNum = match ? match[0] : raw.trim().toUpperCase()
-            document.getElementById('tracker-input').value = orderNum
-            // Open tracker and search
-            const body = document.getElementById('tracker-body')
-            const chev = document.getElementById('tracker-chevron')
-            if (!body.classList.contains('open')) {
-                body.classList.add('open')
-                chev.classList.add('bx-chevron-up')
-                chev.classList.remove('bx-chevron-down')
-            }
-            res.innerHTML = ''
-            trackOrder()
-            showToast('QR uploaded: ' + orderNum, 'success')
-        } catch(e) {
-            res.innerHTML = '<span style="color:var(--red);font-size:0.85rem;">❌ Could not read QR code. Try a clearer image.</span>'
-        }
-        URL.revokeObjectURL(img.src)
-    }
-    img.onerror = () => {
-        res.innerHTML = '<span style="color:var(--red);font-size:0.85rem;">❌ Could not load image. Please try a different file.</span>'
-        URL.revokeObjectURL(img.src)
-    }
-    img.src = URL.createObjectURL(file)
 }
 
 // ─── QR SCANNER ──────────────────────────────────────────

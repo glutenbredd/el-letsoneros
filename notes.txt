@@ -1,0 +1,4 @@
+add user to Admin:
+
+INSERT INTO admin_users (email) VALUES ('daver@example.com')
+ON CONFLICT (email) DO NOTHING;
