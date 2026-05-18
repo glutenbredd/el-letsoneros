@@ -1496,6 +1496,7 @@ body {
 
         <div>
             <button class="new-order-btn" onclick="startNewOrder()"><i class="bx bx-refresh"></i> New Order</button>
+            <button class="back-to-menu-btn" onclick="goBackToOrder()" style="margin-top:0.75rem;width:100%;"><i class="bx bx-edit"></i> Edit My Order</button>
             <a href="index.html"><button class="home-link-btn"><i class="bx bx-home"></i> Home</button></a>
         </div>
     </div>
@@ -2225,6 +2226,13 @@ function downloadQR() {
         }, 400)
     }
 })()
+
+function goBackToOrder() {
+    document.getElementById('page-confirm').classList.remove('visible')
+    document.getElementById('page-checkout').classList.add('visible')
+    setStep(2)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+}
 
 function startNewOrder() {
     cart = []
